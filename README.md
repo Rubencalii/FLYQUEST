@@ -52,6 +52,5 @@ ADMIN_TOKEN=tu_token_admin
 
 El servidor expone:
 
-- POST /api/flyquest/bugs  -> crea un bug (body: title, description, url, severity)
-- GET  /api/flyquest/bugs  -> lista bugs (requiere header x-admin-token)
-
+- POST /api/flyquest/bugs -> crea un bug (body: title, description, url, severity)
+- GET /api/flyquest/bugs -> lista bugs (requiere header x-admin-token)
