@@ -1,0 +1,42 @@
+{
+  "team": "FlyQuest",
+  "league": "LCS",
+  "season": "2025",
+  "roster": [
+    {
+      "name": "Bwipo",
+      "role": "Top",
+      "country": "Bélgica",
+      "photo": "https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/5/54/FQ_Bwipo_2025_Split_1.png"
+    },
+    {
+      "name": "Inspired",
+      "role": "Jungla",
+      "country": "Polonia",
+      "photo": "https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/e/e3/FQ_Inspired_2025_Split_1.png"
+    },
+    {
+      "name": "Quadra",
+      "role": "Mid",
+      "country": "Australia",
+      "photo": "https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/7/7a/FQ_Quadra_2025_Split_1.png"
+    },
+    {
+      "name": "Massu",
+      "role": "ADC",
+      "country": "Chile",
+      "photo": "https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/8/86/FQ_Massu_2025_Split_1.png"
+    },
+    {
+      "name": "Busio",
+      "role": "Soporte",
+      "country": "EE.UU.",
+      "photo": "https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/b/bb/FQ_Busio_2025_Split_1.png"
+    }
+  ],
+  "coach": {
+    "name": "Sharkz",
+    "role": "Entrenador Principal",
+    "photo": "https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/3/38/FQ_Sharkz_2025_Split_1.png"
+  }
+}

@@ -1,0 +1,10 @@
+[
+  {
+    "id": "bug_1760632122256",
+    "title": "Test bug",
+    "description": "Error al cargar roster",
+    "url": "http://localhost:3000",
+    "severity": "high",
+    "createdAt": "2025-10-16T16:28:42.256Z"
+  }
+]
