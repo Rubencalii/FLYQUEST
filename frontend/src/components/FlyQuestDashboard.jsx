@@ -167,32 +167,42 @@ export default function FlyQuestDashboard() {
 
       const data = await res.json()
 
+      // Verificar si la API está en modo fallback (PandaScore caída)
+      if (data.fallback || data.apiError) {
+        const message = data.message || data.apiError || 'La API de PandaScore está temporalmente fuera de servicio'
+        setError(message)
+        setMatches([])
+        console.warn('⚠️ API en modo fallback:', message)
+        return
+      }
+
       // Manejar ambos formatos: array directo o objeto con propiedad matches
       let matchesData = []
+      let apiMessage = null
+
       if (Array.isArray(data)) {
         matchesData = data
       } else if (data.matches && Array.isArray(data.matches)) {
         matchesData = data.matches
-        // Si hay mensaje de la API, mostrarlo en consola
-        if (data.message) {
-          console.log('API Message:', data.message)
-        }
-        // Si hay errores de la API, mostrarlos en consola
-        if (data.errors) {
-          console.warn('API Errors:', data.errors)
-        }
+        apiMessage = data.message
+      } else {
+        // Si no hay estructura esperada
+        matchesData = []
+        apiMessage = data.message
       }
 
       setMatches(matchesData)
       console.log('✅ Partidos cargados:', matchesData.length)
 
-      if (matchesData.length === 0) {
+      if (matchesData.length === 0 && apiMessage) {
+        setError(apiMessage)
+      } else if (matchesData.length === 0) {
         setError('No hay partidos de FlyQuest disponibles en este momento')
       }
     } catch (e) {
       console.error('❌ Error al cargar partidos:', e)
-      setError(e.message || 'Error al cargar partidos')
-      setMatches([]) // Limpiar partidos en caso de error
+      setError('Error al conectar con el servidor. Por favor, verifica tu conexión.')
+      setMatches([])
     } finally {
       setLoading(false)
     }

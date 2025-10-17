@@ -33,7 +33,11 @@ app.get('/api/flyquest/matches', async (req, res) => {
   try {
     const PANDASCORE_API_KEY = process.env.PANDASCORE_API_KEY || '';
     if (!PANDASCORE_API_KEY) {
-      return res.status(500).json({ error: 'No se encontró el token de PandaScore en .env' });
+      return res.status(500).json({
+        error: 'No se encontró el token de PandaScore en .env',
+        matches: [],
+        fallback: true
+      });
     }
 
     // Buscar el ID del equipo FlyQuest en PandaScore
@@ -42,18 +46,45 @@ app.get('/api/flyquest/matches', async (req, res) => {
     const teamResp = await fetch('https://api.pandascore.io/lol/teams?search=flyquest', {
       headers: { 'Authorization': `Bearer ${PANDASCORE_API_KEY}` }
     });
-    if (!teamResp.ok) {
-      return res.status(502).json({ error: 'No se pudo obtener el equipo FlyQuest', status: teamResp.status });
+
+    // Verificar si la API devuelve error 500 o estructura de error de PandaScore
+    const teamData = await teamResp.json();
+
+    // Detectar error del servidor de PandaScore
+    if (teamData.errorCode === 500 || teamData.status === 'fail') {
+      console.error('⚠️ API de PandaScore caída:', teamData.errorMsg || 'Error del servidor');
+      return res.json({
+        matches: [],
+        message: '⚠️ La API de PandaScore está temporalmente fuera de servicio. Por favor, intenta de nuevo más tarde.',
+        apiError: teamData.errorMsg || 'Servidor no disponible',
+        fallback: true
+      });
     }
-    let teams = await teamResp.json();
+
+    if (!teamResp.ok) {
+      return res.json({
+        error: 'No se pudo obtener el equipo FlyQuest',
+        status: teamResp.status,
+        matches: [],
+        fallback: true
+      });
+    }
+
+    let teams = teamData;
     if (!Array.isArray(teams)) {
       teams = teams && teams.data ? teams.data : [];
     }
+
     const flyQuest = Array.isArray(teams)
       ? teams.find(t => t.name && t.name.toLowerCase().includes('flyquest'))
       : null;
+
     if (!flyQuest) {
-      return res.json({ matches: [], message: 'No se encontró el equipo FlyQuest en PandaScore' });
+      return res.json({
+        matches: [],
+        message: 'No se encontró el equipo FlyQuest en PandaScore. La API puede estar en mantenimiento.',
+        fallback: true
+      });
     }
 
     // Obtener todos los partidos del año actual
@@ -69,13 +100,35 @@ app.get('/api/flyquest/matches', async (req, res) => {
       const matchesResp = await fetch(url, {
         headers: { 'Authorization': `Bearer ${PANDASCORE_API_KEY}` }
       });
-      if (!matchesResp.ok) {
-        return res.status(502).json({ error: 'No se pudieron obtener los partidos de FlyQuest', status: matchesResp.status });
+
+      const matchesData = await matchesResp.json();
+
+      // Verificar error de servidor de PandaScore
+      if (matchesData.errorCode === 500 || matchesData.status === 'fail') {
+        console.error('⚠️ Error al obtener partidos:', matchesData.errorMsg);
+        return res.json({
+          matches: [],
+          message: '⚠️ La API de PandaScore está temporalmente fuera de servicio.',
+          fallback: true
+        });
       }
-      const matches = await matchesResp.json();
+
+      if (!matchesResp.ok) {
+        return res.json({
+          error: 'No se pudieron obtener los partidos de FlyQuest',
+          status: matchesResp.status,
+          matches: [],
+          fallback: true
+        });
+      }
+
+      const matches = Array.isArray(matchesData) ? matchesData : [];
       allMatches = allMatches.concat(matches);
       hasMore = matches.length === 100;
       page++;
+
+      // Límite de seguridad para evitar loops infinitos
+      if (page > 10) hasMore = false;
     }
 
     // Formatear los datos para el frontend

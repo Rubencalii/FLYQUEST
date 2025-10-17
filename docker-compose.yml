@@ -3,7 +3,7 @@ version: '3.8'
 services:
   # Servicio Backend - API de Node.js
   backend:
-    build: 
+    build:
       context: ./server
       dockerfile: Dockerfile
     container_name: flyquest-backend
@@ -21,7 +21,7 @@ services:
     networks:
       - flyquest-network
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:4001/api/mantenimiento/estado"]
+      test: [ "CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:4001/api/mantenimiento/estado" ]
       interval: 30s
       timeout: 10s
       retries: 3

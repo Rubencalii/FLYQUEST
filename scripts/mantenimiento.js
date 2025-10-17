@@ -11,11 +11,11 @@ function mostrar(titulo, mensaje, tipo = 'info') {
     outputTitle.textContent = titulo;
     output.textContent = mensaje;
     actualizarHora();
-    
+
     // Añadir color según el tipo de mensaje
-    output.style.color = tipo === 'error' ? '#ef4444' : 
-                         tipo === 'success' ? '#10b981' : 
-                         tipo === 'warning' ? '#f59e0b' : '#e2e8f0';
+    output.style.color = tipo === 'error' ? '#ef4444' :
+        tipo === 'success' ? '#10b981' :
+            tipo === 'warning' ? '#f59e0b' : '#e2e8f0';
 }
 
 // Función para limpiar el panel de salida
@@ -54,7 +54,7 @@ async function testApi() {
     try {
         const res = await fetch(`${API_BASE}/test-api`);
         const data = await res.text();
-        
+
         if (data.includes('OK')) {
             mostrar('✅ Test API completado', data, 'success');
             apiStatus.textContent = '🟢 Disponible';
@@ -76,13 +76,13 @@ async function reiniciarBackend() {
     if (!confirm('¿Estás seguro de reiniciar el backend? Esto interrumpirá el servicio temporalmente.')) {
         return;
     }
-    
+
     mostrar('🔄 Reiniciando Backend', 'Enviando comando de reinicio...');
     try {
         const res = await fetch(`${API_BASE}/reiniciar-backend`);
         const data = await res.text();
         mostrar('✅ Backend reiniciado', data, 'success');
-        
+
         // Esperar y actualizar estado
         setTimeout(actualizarEstadoBackend, 3000);
     } catch (err) {
@@ -96,7 +96,7 @@ async function verLogs() {
     try {
         const res = await fetch(`${API_BASE}/logs`);
         const data = await res.text();
-        
+
         if (data && data.trim() !== '') {
             mostrar('📋 Logs del Sistema', data);
         } else {
@@ -113,7 +113,7 @@ async function estadoServicios() {
     try {
         const res = await fetch(`${API_BASE}/estado`);
         const data = await res.text();
-        
+
         // Intentar parsear como JSON para mejor formato
         try {
             const json = JSON.parse(data);
@@ -122,7 +122,7 @@ async function estadoServicios() {
         } catch {
             mostrar('📊 Estado de Servicios', data, 'success');
         }
-        
+
         actualizarEstadoBackend();
     } catch (err) {
         mostrar('❌ Error al consultar estado', 'Error: ' + err.message, 'error');
@@ -134,12 +134,12 @@ async function actualizarDependencias() {
     if (!confirm('¿Deseas actualizar las dependencias del proyecto? Esto puede tomar varios minutos.')) {
         return;
     }
-    
+
     mostrar('⬆️ Actualizando Dependencias', 'Ejecutando npm install... Por favor espera.');
     try {
         const res = await fetch(`${API_BASE}/actualizar`);
         const data = await res.text();
-        
+
         if (data.includes('up to date') || data.includes('added')) {
             mostrar('✅ Dependencias actualizadas', data, 'success');
         } else {
@@ -156,7 +156,7 @@ async function verEstadoFlyQuest() {
     try {
         const res = await fetch(`${API_BASE}/estado-flyquest`);
         const data = await res.text();
-        
+
         if (data && data.trim() !== '' && !data.includes('No hay registros')) {
             mostrar('📈 Historial FlyQuest API (últimas 50 entradas)', data);
         } else {
@@ -171,7 +171,7 @@ async function verEstadoFlyQuest() {
 document.addEventListener('DOMContentLoaded', () => {
     actualizarEstadoBackend();
     actualizarHora();
-    
+
     // Actualizar estado cada 30 segundos
     setInterval(actualizarEstadoBackend, 30000);
 });
