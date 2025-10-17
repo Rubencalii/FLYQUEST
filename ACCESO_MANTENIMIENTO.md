@@ -9,6 +9,7 @@ Después de que Render termine el deploy (2-3 minutos), podrás acceder al panel
 ```
 
 O más simple:
+
 ```
 🌐 https://flyquest-3.onrender.com/mantenimiento/
 ```
@@ -18,28 +19,34 @@ O más simple:
 ## 🎮 Funcionalidades del Panel
 
 ### 🔍 **Test API**
+
 - Verifica conexión con LoL Esports API
 - Muestra estado de FlyQuest en la API
 
 ### 📊 **Estado de Servicios**
+
 - Ver uptime del servidor
 - Memoria utilizada
 - Puerto y configuración
 
 ### 📈 **Historial FlyQuest**
+
 - Ver eventos recientes de FlyQuest
 - Completados, próximos y en progreso
 - Total de partidos disponibles
 
 ### 📋 **Logs del Sistema**
+
 - Ver últimos logs del servidor
 - Útil para debugging
 
 ### ⬆️ **Actualizar Dependencias**
+
 - Ejecuta `npm install` remotamente
 - Actualiza paquetes del servidor
 
 ### 🔄 **Reiniciar Backend**
+
 - Reinicia el servidor Node.js
 - Útil después de cambios
 
@@ -48,6 +55,7 @@ O más simple:
 ## 📱 Accesos Directos
 
 ### Panel de Mantenimiento:
+
 ```
 https://flyquest-3.onrender.com/mantenimiento/mantenimiento.html
 ```
@@ -55,21 +63,25 @@ https://flyquest-3.onrender.com/mantenimiento/mantenimiento.html
 ### API de Mantenimiento (Endpoints):
 
 **Test API:**
+
 ```
 https://flyquest-3.onrender.com/api/mantenimiento/test-api
 ```
 
 **Estado del Servidor:**
+
 ```
 https://flyquest-3.onrender.com/api/mantenimiento/estado
 ```
 
 **Estado de FlyQuest:**
+
 ```
 https://flyquest-3.onrender.com/api/mantenimiento/estado-flyquest
 ```
 
 **Logs:**
+
 ```
 https://flyquest-3.onrender.com/api/mantenimiento/logs
 ```
@@ -81,6 +93,7 @@ https://flyquest-3.onrender.com/api/mantenimiento/logs
 El panel de mantenimiento está **público** pero las operaciones peligrosas (como reiniciar) piden confirmación.
 
 ### Para mayor seguridad (opcional):
+
 Puedes agregar autenticación básica en el futuro si lo necesitas.
 
 ---
@@ -98,11 +111,13 @@ Puedes agregar autenticación básica en el futuro si lo necesitas.
 Una vez que Render termine el deploy, prueba:
 
 1. **Abre el panel:**
+
    ```
    https://flyquest-3.onrender.com/mantenimiento/mantenimiento.html
    ```
 
 2. **Haz clic en "Testear API"**
+
    - Debería mostrar: "✅ API LoL Esports OK"
 
 3. **Haz clic en "Estado de Servicios"**
@@ -113,6 +128,7 @@ Una vez que Render termine el deploy, prueba:
 ## 🎨 Interfaz del Panel
 
 El panel tiene:
+
 - ✅ **Diseño moderno** con gradientes
 - ✅ **Responsive** (funciona en móvil)
 - ✅ **Estados en tiempo real** (Backend, API)
@@ -124,11 +140,13 @@ El panel tiene:
 ## 🐛 Si no funciona
 
 ### Error 404 al acceder:
+
 1. Espera a que Render termine el deploy
 2. Verifica que los archivos scripts/ estén en GitHub
 3. Revisa los logs en Render Dashboard
 
 ### Los botones no funcionan:
+
 - Verifica que la API esté activa
 - Revisa la consola del navegador (F12)
 

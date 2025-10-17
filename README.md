@@ -10,18 +10,21 @@ Proyecto fullstack: frontend React + TailwindCSS y backend Express que muestra i
 ## 🌟 Características principales
 
 ### 🔴 Datos en tiempo real
+
 - 📊 **Worlds 2025** - Campeonato Mundial en vivo
 - 🏆 **LTA North** - Temporada actual de Norteamérica
 - 🌍 **MSI** - Mid-Season Invitational
 - 🎮 **Todas las competiciones** internacionales
 
 ### ⚡ Actualización automática
+
 - 🔄 Integración con **LoL Esports Official API** (Riot Games)
 - ⏱️ Refresco automático cada 30 segundos
 - 📅 Partidos históricos y próximos (últimos 3 meses)
 - 🎮 Resultados en vivo durante los partidos
 
 ### 🎨 Interfaz moderna
+
 - 📱 Diseño responsivo con TailwindCSS
 - 🌙 Modo oscuro/claro
 - 🌐 Multiidioma (ES/EN)
@@ -30,6 +33,7 @@ Proyecto fullstack: frontend React + TailwindCSS y backend Express que muestra i
 - ⚙️ Panel de administración
 
 ### �️ Dashboard de Mantenimiento
+
 - 🔍 Testear conexión con PandaScore API
 - 📊 Monitoreo del estado de servicios
 - 📈 Historial de disponibilidad de FlyQuest
@@ -40,6 +44,7 @@ Proyecto fullstack: frontend React + TailwindCSS y backend Express que muestra i
 ## 🐳 Deployment con Docker (Recomendado)
 
 ### Requisitos previos
+
 - Docker 20.10 o superior
 - Docker Compose 1.29 o superior
 
@@ -91,10 +96,10 @@ docker-compose ps
 
 Una vez iniciados los contenedores:
 
-| Servicio | URL | Descripción |
-|----------|-----|-------------|
-| **Frontend** | http://localhost:5173 | Dashboard principal de FlyQuest |
-| **Backend API** | http://localhost:4001 | API REST del servidor |
+| Servicio          | URL                   | Descripción                         |
+| ----------------- | --------------------- | ----------------------------------- |
+| **Frontend**      | http://localhost:5173 | Dashboard principal de FlyQuest     |
+| **Backend API**   | http://localhost:4001 | API REST del servidor               |
 | **Mantenimiento** | http://localhost:8080 | Panel de administración y monitoreo |
 
 ## � Arquitectura Docker

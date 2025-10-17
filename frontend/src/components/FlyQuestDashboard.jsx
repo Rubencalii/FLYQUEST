@@ -78,12 +78,12 @@ function MatchCard({ match, timezone, showDate = false }) {
             </span>
           </div>
 
-          <div className="flex items-center justify-between pt-2">
-            <div className="flex items-center gap-6 flex-1">
+          <div className="flex flex-col md:flex-row items-stretch justify-between pt-2 gap-4 md:gap-0">
+            <div className="flex flex-col md:flex-row items-stretch gap-4 md:gap-6 flex-1">
               {match.teams.map((t, idx) => (
                 <React.Fragment key={t.name}>
                   <div className="flex items-center gap-3 flex-1">
-                    <div className={`relative ${t.name.toLowerCase().includes('flyquest') ? 'animate-pulse-slow' : ''}`}>
+                    <div className={`relative ${t.name.toLowerCase().includes('flyquest') ? 'animate-pulse-slow' : ''} flex-shrink-0`}>
                       {t.logo && !imageErrors[t.name] ? (
                         <img
                           src={t.logo}
@@ -104,7 +104,7 @@ function MatchCard({ match, timezone, showDate = false }) {
                         <div className="absolute inset-0 rounded-lg bg-flyquest-green/20 dark:bg-flyquest-neon/20 blur-xl"></div>
                       )}
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       <div className="font-bold text-base text-flyquest-green dark:text-flyquest-neon">
                         {t.name}
                       </div>
@@ -117,7 +117,7 @@ function MatchCard({ match, timezone, showDate = false }) {
                     </div>
                   </div>
                   {idx === 0 && (
-                    <div className="text-2xl font-black text-gray-300 dark:text-flyquest-gray/30 mx-2">VS</div>
+                    <div className="hidden md:flex text-2xl font-black text-gray-300 dark:text-flyquest-gray/30 mx-2 items-center self-center">VS</div>
                   )}
                 </React.Fragment>
               ))}
@@ -350,8 +350,8 @@ export default function FlyQuestDashboard() {
         {/* Efecto de brillo de fondo */}
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-flyquest-green to-transparent dark:via-flyquest-neon"></div>
 
-        <div className="flex items-center justify-between relative z-10">
-          <div className="flex items-center gap-6">
+        <div className="flex items-center justify-between relative z-10 flex-col md:flex-row gap-4 md:gap-0">
+          <div className="flex items-center gap-6 w-full md:w-auto">
             <div className="relative">
               {!headerLogoError ? (
                 <img
@@ -370,8 +370,8 @@ export default function FlyQuestDashboard() {
               )}
               <div className="absolute inset-0 bg-flyquest-green/20 dark:bg-flyquest-neon/30 blur-2xl rounded-full"></div>
             </div>
-            <div>
-              <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-flyquest-green via-emerald-600 to-flyquest-green dark:from-flyquest-neon dark:via-flyquest-green dark:to-flyquest-neon">
+            <div className="flex-1 min-w-0">
+              <h1 className="text-2xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-flyquest-green via-emerald-600 to-flyquest-green dark:from-flyquest-neon dark:via-flyquest-green dark:to-flyquest-neon truncate">
                 FlyQuest Dashboard
               </h1>
               <div className="text-sm text-gray-600 dark:text-flyquest-gray mt-1 flex items-center gap-2">
@@ -381,7 +381,7 @@ export default function FlyQuestDashboard() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-3 flex-wrap justify-end w-full md:w-auto">
             <button
               onClick={toggleLanguage}
               className="px-4 py-2 rounded-xl bg-gray-100 dark:bg-flyquest-dark/50 hover:bg-flyquest-green/10 dark:hover:bg-flyquest-neon/20 border border-flyquest-green/30 dark:border-flyquest-neon/30 text-gray-800 dark:text-flyquest-white font-semibold transition-all hover:scale-105 hover:shadow-lg"
