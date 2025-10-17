@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState, useCallback, useMemo } from 'react'
 import useLanguage from '../hooks/useLanguage'
 import FlyQuestRoster from './FlyQuestRoster'
 import FooterFlyQuest from './FooterFlyQuest'
@@ -166,44 +166,18 @@ export default function FlyQuestDashboard() {
       }
 
       const data = await res.json()
-
-      // Sobrescribir logos del servidor con los logos personalizados de teamLogos.json
-      const matchesWithCustomLogos = data.map(match => ({
-        ...match,
-        teams: match.teams.map(team => ({
-          ...team,
-          logo: logos[team.name] || team.logo // Usar logo personalizado si existe, sino usar el del servidor
-        }))
-      }))
-
-      setMatches(matchesWithCustomLogos)
-      console.log('Matches loaded:', matchesWithCustomLogos.length)
+      setMatches(data)
+      console.log('Matches loaded:', data.length)
     } catch (e) {
       console.error('fetch matches error:', e)
       setError(e.message || 'Error al cargar partidos')
     } finally {
       setLoading(false)
     }
-  }, [logos])
-
-  useEffect(() => {
-    // Solo cargar partidos cuando los logos estén disponibles
-    if (Object.keys(logos).length > 0) {
-      fetchMatches()
-      const iv = setInterval(fetchMatches, 30000)
-      return () => clearInterval(iv)
-    }
-  }, [fetchMatches, logos])
-
-  useEffect(() => {
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone
-    setTimezone(tz)
-    // small list for selector - usar Set para evitar duplicados
-    const uniqueTimezones = [...new Set([tz, 'UTC', 'America/Los_Angeles', 'Europe/Madrid'])]
-    setTzList(uniqueTimezones)
   }, [])
 
   useEffect(() => {
+    // Cargar logos primero
     fetch('/teamLogos.json')
       .then((r) => r.json())
       .then(setLogos)
@@ -217,8 +191,36 @@ export default function FlyQuestDashboard() {
   }, [])
 
   useEffect(() => {
+    // Solo cargar partidos cuando los logos estén disponibles
+    if (Object.keys(logos).length > 0) {
+      fetchMatches()
+      const iv = setInterval(fetchMatches, 30000)
+      return () => clearInterval(iv)
+    }
+  }, [logos]) // Removido fetchMatches de las dependencias
+
+  useEffect(() => {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone
+    setTimezone(tz)
+    // small list for selector - usar Set para evitar duplicados
+    const uniqueTimezones = [...new Set([tz, 'UTC', 'America/Los_Angeles', 'Europe/Madrid'])]
+    setTzList(uniqueTimezones)
+  }, [])
+
+  useEffect(() => {
     document.documentElement.classList.toggle('dark', dark)
   }, [dark])
+
+  // Combinar partidos con logos personalizados
+  const matchesWithLogos = useMemo(() => {
+    return matches.map(match => ({
+      ...match,
+      teams: match.teams.map(team => ({
+        ...team,
+        logo: logos[team.name] || team.logo // Usar logo personalizado si existe, sino usar el del servidor
+      }))
+    }))
+  }, [matches, logos])
 
   // Función para filtrar partidos por fecha y liga
   const getFilteredMatches = () => {
@@ -233,7 +235,7 @@ export default function FlyQuestDashboard() {
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
     const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59)
 
-    let filtered = [...matches]
+    let filtered = [...matchesWithLogos]
 
     // Filtrar por fecha
     if (dateFilter === 'week') {

@@ -3,7 +3,15 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "docker:up": "docker-compose up --build",
-    "docker:down": "docker-compose down"
+    "start": "npm run docker:clean && npm run docker:up",
+    "docker:up": "docker-compose up --build -d",
+    "docker:down": "docker-compose down",
+    "docker:clean": "docker-compose down -v && docker system prune -f",
+    "docker:logs": "docker-compose logs -f",
+    "docker:restart": "docker-compose restart",
+    "dev": "cd frontend && npm run dev",
+    "dev:server": "cd server && node index.js",
+    "install:all": "npm install && cd frontend && npm install && cd ../server && npm install",
+    "check": "curl http://localhost:4001/api/flyquest/matches && curl http://localhost:3001"
   }
 }
