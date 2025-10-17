@@ -29,111 +29,78 @@ try {
 
 app.get('/api/flyquest/matches', async (req, res) => {
   try {
-    // Configuración de ligas - IDs oficiales de Riot para 2025
-    // Fuente: https://esports-api.lolesports.com/persisted/gw/getLeagues?hl=en-US
-    const leagues = [
-      { id: '98767975604431411', name: 'Worlds 2025' },           // World Championship
-      { id: '98767991299243165', name: 'LCS' },                   // LCS North America
-      { id: '107898214974993351', name: 'MSI 2025' },             // Mid-Season Invitational
-      { id: '98767991302996019', name: 'LEC' },                   // LEC Europe
-      { id: '98767991310872058', name: 'LCK' },                   // LCK Korea
-      { id: '98767991314006698', name: 'LPL' },                   // LPL China
-      { id: '105709090213554609', name: 'CBLOL' },                // Brazil
-      { id: '105266108767593290', name: 'LLA' },                  // Latin America
-      { id: '110988878756156222', name: 'LCS Championship' },     // LCS Playoffs
-    ]
+    const PANDASCORE_API_KEY = process.env.PANDASCORE_API_KEY || '';
+    if (!PANDASCORE_API_KEY) {
+      return res.status(500).json({ error: 'No se encontró el token de PandaScore en .env' });
+    }
 
-    let allMatches = []
-    const errors = []
+    // Buscar el ID del equipo FlyQuest en PandaScore
+    // Documentación: https://developer.pandascore.io/
+    // Endpoint: https://api.pandascore.io/lol/teams?search=flyquest
+    const teamResp = await fetch('https://api.pandascore.io/lol/teams?search=flyquest', {
+      headers: { 'Authorization': `Bearer ${PANDASCORE_API_KEY}` }
+    });
+    if (!teamResp.ok) {
+      return res.status(502).json({ error: 'No se pudo obtener el equipo FlyQuest', status: teamResp.status });
+    }
+    const teams = await teamResp.json();
+    const flyQuest = teams.find(t => t.name.toLowerCase().includes('flyquest'));
+    if (!flyQuest) {
+      return res.json({ matches: [], message: 'No se encontró el equipo FlyQuest en PandaScore' });
+    }
 
-    // Intentar obtener partidos de todas las ligas
-    for (const league of leagues) {
-      try {
-        const url = `https://esports-api.lolesports.com/persisted/gw/getSchedule?hl=en-US&leagueId=${league.id}`
+    // Obtener todos los partidos del año actual
+    const year = new Date().getFullYear();
+    const startDate = `${year}-01-01T00:00:00Z`;
+    const endDate = `${year}-12-31T23:59:59Z`;
+    let allMatches = [];
+    let page = 1;
+    let hasMore = true;
 
-        const response = await fetch(url, {
-          headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Accept': 'application/json',
-            'Accept-Language': 'en-US,en;q=0.9',
-            'Origin': 'https://lolesports.com',
-            'Referer': 'https://lolesports.com/',
-          },
-          timeout: 5000
-        })
-
-        if (!response.ok) {
-          console.log(`⚠️  ${league.name}: HTTP ${response.status}`)
-          errors.push({ league: league.name, error: `HTTP ${response.status}` })
-          continue
-        }
-
-        const data = await response.json()
-        const events = data?.data?.schedule?.events || []
-
-        // Filtrar solo partidos de FlyQuest
-        const flyQuestMatches = events.filter(event => {
-          const teams = event.match?.teams || []
-          return teams.some(team =>
-            team.name?.toLowerCase().includes('flyquest') ||
-            team.code?.toLowerCase().includes('fly')
-          )
-        })
-
-        // Transformar a nuestro formato
-        for (const event of flyQuestMatches) {
-          const teams = (event.match?.teams || []).map(team => ({
-            name: team.name || 'Unknown',
-            code: team.code || team.name?.substring(0, 3).toUpperCase() || 'TBD',
-            logo: team.image || '',
-            score: team.result?.gameWins ?? 0
-          }))
-
-          allMatches.push({
-            id: event.match?.id || event.id || `${league.id}-${event.startTime}`,
-            status: event.state || 'unstarted', // unstarted, inProgress, completed
-            startTime: event.startTime,
-            teams,
-            format: event.match?.strategy?.type || 'bestOf',
-            league: league.name
-          })
-        }
-
-        if (flyQuestMatches.length > 0) {
-          console.log(`✅ ${league.name}: ${flyQuestMatches.length} partidos`)
-        }
-
-      } catch (err) {
-        console.log(`❌ ${league.name}: ${err.message}`)
-        errors.push({ league: league.name, error: err.message })
+    while (hasMore) {
+      const url = `https://api.pandascore.io/lol/matches?filter[team_id]=${flyQuest.id}&range[begin_at]=${startDate},${endDate}&sort=-begin_at&page[size]=100&page[number]=${page}`;
+      const matchesResp = await fetch(url, {
+        headers: { 'Authorization': `Bearer ${PANDASCORE_API_KEY}` }
+      });
+      if (!matchesResp.ok) {
+        return res.status(502).json({ error: 'No se pudieron obtener los partidos de FlyQuest', status: matchesResp.status });
       }
+      const matches = await matchesResp.json();
+      allMatches = allMatches.concat(matches);
+      hasMore = matches.length === 100;
+      page++;
     }
 
-    // Ordenar por fecha, más recientes primero
-    allMatches.sort((a, b) => new Date(b.startTime) - new Date(a.startTime))
+    // Formatear los datos para el frontend
+    const formatted = allMatches.map(match => ({
+      id: match.id,
+      status: match.status, // not_started, running, finished, canceled
+      startTime: match.begin_at,
+      teams: match.opponents.map(op => ({
+        name: op.opponent.name,
+        code: op.opponent.acronym || op.opponent.name.substring(0,3).toUpperCase(),
+        logo: op.opponent.image_url || '',
+        score: match.results?.find(r => r.team_id === op.opponent.id)?.score || 0
+      })),
+      format: match.number_of_games ? `bo${match.number_of_games}` : 'bo1',
+      league: match.league?.name || 'Desconocida'
+    }));
 
-    console.log(`\n📊 Total: ${allMatches.length} partidos de FlyQuest encontrados`)
+    // Ordenar por fecha descendente
+    formatted.sort((a, b) => new Date(b.startTime) - new Date(a.startTime));
 
-    // Si no hay partidos, devolver mensaje informativo
-    if (allMatches.length === 0) {
-      console.log('⚠️  No se encontraron partidos de FlyQuest en ninguna liga')
-      return res.json({
-        matches: [],
-        message: 'No hay partidos programados de FlyQuest en este momento',
-        searchedLeagues: leagues.map(l => l.name),
-        errors: errors.length > 0 ? errors : undefined
-      })
+    if (formatted.length === 0) {
+      return res.json({ matches: [], message: 'No hay partidos programados de FlyQuest en este momento' });
     }
 
-    return res.json(allMatches)
-
+    return res.json(formatted);
   } catch (e) {
-    console.error('❌ Error del servidor:', e.message)
+    console.error('❌ Error del servidor:', e.message);
     return res.status(500).json({
-      error: 'Error al obtener partidos',
+      error: 'Error al obtener partidos desde PandaScore',
       message: e.message,
       matches: []
-    })
+    });
   }
 })
 
