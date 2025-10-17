@@ -207,6 +207,51 @@ app.get('/api/flyquest/matches', async (req, res) => {
   }
 })
 
+// Proxy: Roster de FlyQuest (oculta la API key al cliente)
+app.get('/api/flyquest/roster', async (req, res) => {
+  try {
+    const resp = await fetch('https://esports-api.lolesports.com/persisted/gw/getTeams?hl=en-US', {
+      headers: { 'x-api-key': LOL_ESPORTS_API_KEY }
+    });
+
+    if (!resp.ok) {
+      console.error('❌ Error getTeams:', resp.status);
+      return res.status(502).json({ error: 'Error al obtener equipos', status: resp.status, roster: [] });
+    }
+
+    const data = await resp.json();
+    const teams = data?.data?.teams || [];
+    const fly = teams.find(t => t.slug === 'flyquest' || t.code === 'FLY' || t.name?.toLowerCase() === 'flyquest');
+
+    if (!fly) {
+      return res.json({ roster: [], message: 'FlyQuest no encontrado en LoL Esports API' });
+    }
+
+    const roleMap = {
+      top: 'Top',
+      jungle: 'Jungla',
+      jungler: 'Jungla',
+      mid: 'Mid',
+      bottom: 'ADC',
+      adc: 'ADC',
+      support: 'Soporte'
+    };
+
+    const roster = (fly.players || []).map((p, idx) => ({
+      id: idx + 1,
+      name: p.fullName || p.name || p.summonerName,
+      role: roleMap[(p.role || '').toLowerCase()] || p.role || 'N/A',
+      country: p.country || p.hometown || '—',
+      image: p.photoURL || p.image || ''
+    }));
+
+    return res.json({ team: fly.name || 'FlyQuest', roster });
+  } catch (e) {
+    console.error('❌ roster proxy', e);
+    return res.status(500).json({ error: 'Error interno obteniendo roster', roster: [] });
+  }
+});
+
 // Bug reporting endpoint (public) with validation and atomic write + backup
 app.post(
   '/api/flyquest/bugs',

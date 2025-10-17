@@ -598,15 +598,14 @@ export default function FlyQuestDashboard() {
         </div>
       </header>
 
-      <main className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <section className="md:col-span-2">
-          {/* Sección de filtros espectacular */}
-          <div className="card p-6 mb-6 animate-slide-in border border-flyquest-green/20 dark:border-flyquest-neon/20">
+      <main className="space-y-6">
+        {/* 1) CALENDARIO ARRIBA */}
+        <section>
+          <div className="card p-6 animate-slide-in border border-flyquest-green/20 dark:border-flyquest-neon/20">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-flyquest-green to-emerald-600 dark:from-flyquest-neon dark:to-flyquest-green">
-                ⚔️ {t.matches}
+                📅 Calendario
               </h2>
-
               {/* Contador animado */}
               {matches.length > 0 && (
                 <div className="px-4 py-2 bg-flyquest-green/10 dark:bg-flyquest-neon/10 border border-flyquest-green/30 dark:border-flyquest-neon/30 rounded-full">
@@ -744,19 +743,14 @@ export default function FlyQuestDashboard() {
             {/* Notificaciones Push */}
             <div className="mt-4 pt-4 border-t border-flyquest-green/20 dark:border-flyquest-neon/20">
               <NotificationManager matches={matches} favorites={favorites} lang={lang} />
-              
-              {/* Alertas Avanzadas */}
               <AdvancedAlerts 
                 matches={matches} 
                 favorites={favorites} 
                 lang={lang}
                 onSendNotification={(title, options) => {
-                  // Enviar notificación usando el API de NotificationManager
                   if ('Notification' in window && Notification.permission === 'granted') {
                     if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-                      navigator.serviceWorker.ready.then(reg => {
-                        reg.showNotification(title, options)
-                      })
+                      navigator.serviceWorker.ready.then(reg => { reg.showNotification(title, options) })
                     } else {
                       new Notification(title, options)
                     }
@@ -765,19 +759,70 @@ export default function FlyQuestDashboard() {
               />
             </div>
           </div>
+        </section>
 
-          {/* Estadísticas de FlyQuest */}
+        {/* 2) ROSTER debajo del calendario */}
+        <section>
+          <div className="animate-slide-in" style={{ animationDelay: '0.05s' }}>
+            <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-flyquest-green to-emerald-600 dark:from-flyquest-neon dark:to-flyquest-green mb-4 flex items-center gap-2">
+              👥 {t.roster}
+            </h2>
+            <div className="card border-2 border-flyquest-green/20 dark:border-flyquest-neon/20 hover:border-flyquest-green/40 dark:hover:border-flyquest-neon/40 transition-all">
+              <FlyQuestRoster />
+            </div>
+          </div>
+        </section>
+
+        {/* 3) TODO LO DEMÁS */}
+        <section>
           {!loading && !error && matches.length > 0 && (
             <div className="animate-fade-in space-y-6">
+              {/* Lista de partidos filtrados */}
+              {getFilteredMatches().length === 0 ? (
+                <div className="card text-center py-16 border-2 border-flyquest-green/20 dark:border-flyquest-neon/20 animate-fade-in relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-flyquest-green/5 to-transparent dark:from-flyquest-neon/5 dark:to-transparent"></div>
+                  <div className="relative z-10">
+                    <div className="text-7xl mb-4 animate-bounce-slow">📅</div>
+                    <p className="text-2xl font-bold text-flyquest-green dark:text-flyquest-neon mb-2">
+                      No hay partidos
+                      {dateFilter === 'week' && ' esta semana'}
+                      {dateFilter === 'month' && ' este mes'}
+                      {dateFilter === 'all' && ' programados'}
+                    </p>
+                    <p className="text-gray-600 dark:text-flyquest-gray">Intenta con otro filtro de fecha</p>
+                  </div>
+                </div>
+              ) : (
+                getFilteredMatches().map((m, index, arr) => {
+                  const currentDate = new Date(m.startTime).toLocaleDateString();
+                  const prevDate = index > 0 ? new Date(arr[index - 1].startTime).toLocaleDateString() : null;
+                  const showDate = currentDate !== prevDate;
+                  return (
+                    <div key={m.id} className="relative">
+                      <MatchCard
+                        match={m}
+                        timezone={timezone === 'local' ? Intl.DateTimeFormat().resolvedOptions().timeZone : timezone}
+                        showDate={showDate}
+                        isFavorite={isFavorite(m.id)}
+                        onToggleFavorite={toggleFavorite}
+                      />
+                      <div className="absolute right-4 top-4 z-20 flex gap-2">
+                        <button
+                          onClick={() => handleShare(m)}
+                          className="px-3 py-2 rounded-lg bg-flyquest-neon/10 hover:bg-flyquest-neon/20 border border-flyquest-neon/30 text-flyquest-neon font-semibold text-sm transition-all hover:scale-110"
+                        >
+                          🔗 Compartir
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+
+              {/* Stats y módulos adicionales */}
               <FlyQuestStats matches={matches} lang={lang} />
-              
-              {/* Dashboard de Gráficos Avanzados */}
               <StatsBoard matches={matches} lang={lang} dark={dark} />
-
-              {/* Sistema de Logros */}
               <Achievements matches={matches} lang={lang} />
-
-              {/* Estadísticas de Jugadores */}
               <PlayerStats matches={matches} lang={lang} dark={dark} />
             </div>
           )}
@@ -812,80 +857,24 @@ export default function FlyQuestDashboard() {
             </div>
           )}
 
-          {!loading && !error && (
-            <div>
-              {getFilteredMatches().length === 0 && (
-                <div className="card text-center py-16 border-2 border-flyquest-green/20 dark:border-flyquest-neon/20 animate-fade-in relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-flyquest-green/5 to-transparent dark:from-flyquest-neon/5 dark:to-transparent"></div>
-                  <div className="relative z-10">
-                    <div className="text-7xl mb-4 animate-bounce-slow">📅</div>
-                    <p className="text-2xl font-bold text-flyquest-green dark:text-flyquest-neon mb-2">
-                      No hay partidos
-                      {dateFilter === 'week' && ' esta semana'}
-                      {dateFilter === 'month' && ' este mes'}
-                      {dateFilter === 'all' && ' programados'}
-                    </p>
-                    <p className="text-gray-600 dark:text-flyquest-gray">Intenta con otro filtro de fecha</p>
-                  </div>
-                </div>
-              )}
-              {getFilteredMatches().map((m, index, arr) => {
-                // Detectar si este partido es el primero del día
-                const currentDate = new Date(m.startTime).toLocaleDateString();
-                const prevDate = index > 0 ? new Date(arr[index - 1].startTime).toLocaleDateString() : null;
-                const showDate = currentDate !== prevDate;
-
-                return (
-                  <div key={m.id} className="relative">
-                    <MatchCard
-                      match={m}
-                      timezone={timezone === 'local' ? Intl.DateTimeFormat().resolvedOptions().timeZone : timezone}
-                      showDate={showDate}
-                      isFavorite={isFavorite(m.id)}
-                      onToggleFavorite={toggleFavorite}
-                    />
-                    <div className="absolute right-4 top-4 z-20 flex gap-2">
-                      <button
-                        onClick={() => handleShare(m)}
-                        className="px-3 py-2 rounded-lg bg-flyquest-neon/10 hover:bg-flyquest-neon/20 border border-flyquest-neon/30 text-flyquest-neon font-semibold text-sm transition-all hover:scale-110"
-                      >
-                        🔗 Compartir
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
         </section>
 
-        <aside className="space-y-6">
-          {/* Roster con diseño mejorado */}
-          <div className="animate-slide-in" style={{ animationDelay: '0.1s' }}>
-            <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-flyquest-green to-emerald-600 dark:from-flyquest-neon dark:to-flyquest-green mb-4 flex items-center gap-2">
-              👥 {t.roster}
-            </h2>
-            <div className="card border-2 border-flyquest-green/20 dark:border-flyquest-neon/20 hover:border-flyquest-green/40 dark:hover:border-flyquest-neon/40 transition-all">
-              <FlyQuestRoster />
+        {/* Opcional: Paneles adicionales */}
+        {showBugForm && (
+          <div className="animate-slide-in">
+            <div className="card border-2 border-red-500/30">
+              <BugReport />
             </div>
           </div>
+        )}
 
-          {showBugForm && (
-            <div className="animate-slide-in">
-              <div className="card border-2 border-red-500/30">
-                <BugReport />
-              </div>
+        {showAdmin && (
+          <div className="animate-slide-in">
+            <div className="card border-2 border-flyquest-neon/30">
+              <AdminDashboard matches={matches} roster={rosterData?.roster} />
             </div>
-          )}
-
-          {showAdmin && (
-            <div className="animate-slide-in">
-              <div className="card border-2 border-flyquest-neon/30">
-                <AdminDashboard matches={matches} roster={rosterData?.roster} />
-              </div>
-            </div>
-          )}
-        </aside>
+          </div>
+        )}
       </main>
 
       <FooterFlyQuest t={t} />

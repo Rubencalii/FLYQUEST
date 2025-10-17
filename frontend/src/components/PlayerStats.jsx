@@ -10,29 +10,14 @@ export default function PlayerStats({ matches, lang = 'es', dark = false }) {
   const [selectedPlayer, setSelectedPlayer] = useState(null);
   const [playersData, setPlayersData] = useState([]);
 
-  // Fetch datos reales de LoL Esports API
+  // Fetch datos reales a través del backend (oculta API key)
   React.useEffect(() => {
     const fetchPlayers = async () => {
       try {
-        const apiKey = import.meta.env.VITE_LOL_ESPORTS_API_KEY;
-        const res = await fetch('https://esports-api.lolesports.com/persisted/gw/getTeams?hl=es-ES', {
-          headers: {
-            'x-api-key': apiKey
-          }
-        });
+        const res = await fetch('/api/flyquest/roster');
         const data = await res.json();
-        // Buscar FlyQuest y su roster
-        const flyquest = data.data.teams.find(t => t.name?.toLowerCase() === 'flyquest');
-        if (flyquest && flyquest.players) {
-          const mapped = flyquest.players.map((p, idx) => ({
-            id: idx + 1,
-            name: p.fullName || p.summonerName,
-            role: p.role || '',
-            country: p.country || '',
-            image: p.photoURL || '',
-            // Puedes mapear más datos si la API los provee
-          }));
-          setPlayersData(mapped);
+        if (Array.isArray(data.roster) && data.roster.length > 0) {
+          setPlayersData(data.roster);
         } else {
           // Fallback: datos locales
           setPlayersData([
