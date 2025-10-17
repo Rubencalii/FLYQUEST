@@ -1,0 +1,17 @@
+# Scripts de monitoreo (bash)
+*.sh
+
+# Archivos de desarrollo
+*.log
+*.md
+.git/
+.gitignore
+.vscode/
+.idea/
+
+# Archivos temporales
+tmp/
+temp/
+*.tmp
+*.swp
+*.swo

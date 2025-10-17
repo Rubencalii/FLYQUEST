@@ -3,11 +3,7 @@ node_modules/
 npm-debug.log
 yarn-error.log
 
-# Build anterior
-dist/
-build/
-
-# Archivos de entorno
+# Archivos de entorno (se copiarán explícitamente)
 .env.local
 .env.*.local
 

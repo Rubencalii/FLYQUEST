@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Mantenimiento - FlyQuest</title>
+    <link rel="stylesheet" href="mantenimiento.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>🛠️ Panel de Mantenimiento FlyQuest</h1>
+            <p class="subtitle">Monitoreo y gestión del sistema</p>
+        </header>
+        
+        <div class="status-bar">
+            <div class="status-item">
+                <span class="status-label">Backend:</span>
+                <span id="backend-status" class="status-value">●</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">API:</span>
+                <span id="api-status" class="status-value">●</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Última actualización:</span>
+                <span id="last-update" class="status-value">-</span>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🔧 Operaciones</h2>
+            <div class="panel">
+                <button onclick="testApi()" class="btn btn-primary">
+                    <span class="btn-icon">🔍</span>
+                    Testear API PandaScore
+                </button>
+                <button onclick="estadoServicios()" class="btn btn-info">
+                    <span class="btn-icon">📊</span>
+                    Estado de Servicios
+                </button>
+                <button onclick="verEstadoFlyQuest()" class="btn btn-warning">
+                    <span class="btn-icon">📈</span>
+                    Historial FlyQuest API
+                </button>
+                <button onclick="verLogs()" class="btn btn-secondary">
+                    <span class="btn-icon">📋</span>
+                    Ver Logs del Sistema
+                </button>
+                <button onclick="actualizarDependencias()" class="btn btn-success">
+                    <span class="btn-icon">⬆️</span>
+                    Actualizar Dependencias
+                </button>
+                <button onclick="reiniciarBackend()" class="btn btn-danger">
+                    <span class="btn-icon">🔄</span>
+                    Reiniciar Backend
+                </button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📤 Resultados</h2>
+            <div class="output-container">
+                <div class="output-header">
+                    <span id="output-title">Esperando acción...</span>
+                    <button onclick="limpiarOutput()" class="btn-clear">Limpiar</button>
+                </div>
+                <pre id="output" class="output-content">Selecciona una operación para ver los resultados aquí.</pre>
+            </div>
+        </div>
+    </div>
+    <script src="mantenimiento.js"></script>
+</body>
+
+</html>

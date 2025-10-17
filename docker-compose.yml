@@ -1,16 +1,68 @@
 version: '3.8'
-services:
-  server:
-    build: ./server
-    ports:
-      - '4001:4001'
-    environment:
-      - RIOT_API_KEY=${RIOT_API_KEY}
-      - PORT=4001
 
-  frontend:
-    build: ./frontend
+services:
+  # Servicio Backend - API de Node.js
+  backend:
+    build: 
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: flyquest-backend
     ports:
-      - '3001:80'
+      - "4001:4001"
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - ./server/.env
+    volumes:
+      # Persistir datos de bugs y logs
+      - backend-data:/app/data
+      - backend-logs:/app/logs
+    restart: unless-stopped
+    networks:
+      - flyquest-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:4001/api/mantenimiento/estado"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Servicio Frontend - Dashboard React con Nginx
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: flyquest-frontend
+    ports:
+      - "5173:80"
     depends_on:
-      - server
+      - backend
+    restart: unless-stopped
+    networks:
+      - flyquest-network
+
+  # Servicio de Mantenimiento - Dashboard HTML con Nginx
+  mantenimiento:
+    build:
+      context: ./scripts
+      dockerfile: Dockerfile
+    container_name: flyquest-mantenimiento
+    ports:
+      - "8080:8080"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - flyquest-network
+
+# Volúmenes nombrados para persistencia de datos
+volumes:
+  backend-data:
+    driver: local
+  backend-logs:
+    driver: local
+
+# Red personalizada para comunicación entre servicios
+networks:
+  flyquest-network:
+    driver: bridge

@@ -1,3 +1,5 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import express from 'express'
 import fetch from 'node-fetch'
 import cors from 'cors'
@@ -43,8 +45,13 @@ app.get('/api/flyquest/matches', async (req, res) => {
     if (!teamResp.ok) {
       return res.status(502).json({ error: 'No se pudo obtener el equipo FlyQuest', status: teamResp.status });
     }
-    const teams = await teamResp.json();
-    const flyQuest = teams.find(t => t.name.toLowerCase().includes('flyquest'));
+    let teams = await teamResp.json();
+    if (!Array.isArray(teams)) {
+      teams = teams && teams.data ? teams.data : [];
+    }
+    const flyQuest = Array.isArray(teams)
+      ? teams.find(t => t.name && t.name.toLowerCase().includes('flyquest'))
+      : null;
     if (!flyQuest) {
       return res.json({ matches: [], message: 'No se encontró el equipo FlyQuest en PandaScore' });
     }
@@ -78,7 +85,7 @@ app.get('/api/flyquest/matches', async (req, res) => {
       startTime: match.begin_at,
       teams: match.opponents.map(op => ({
         name: op.opponent.name,
-        code: op.opponent.acronym || op.opponent.name.substring(0,3).toUpperCase(),
+        code: op.opponent.acronym || op.opponent.name.substring(0, 3).toUpperCase(),
         logo: op.opponent.image_url || '',
         score: match.results?.find(r => r.team_id === op.opponent.id)?.score || 0
       })),
@@ -159,3 +166,82 @@ app.get('/api/flyquest/bugs', (req, res) => {
 
 const port = process.env.PORT || 4001
 app.listen(port, () => console.log(`✅ Server running on port ${port}`))
+
+// Endpoints de mantenimiento
+app.get('/api/mantenimiento/test-api', async (req, res) => {
+  try {
+    const PANDASCORE_API_KEY = process.env.PANDASCORE_API_KEY || '';
+    if (!PANDASCORE_API_KEY) return res.status(500).send('No se encontró el token de PandaScore');
+    const resp = await fetch('https://api.pandascore.io/lol/teams?search=flyquest', {
+      headers: { 'Authorization': `Bearer ${PANDASCORE_API_KEY}` }
+    });
+    if (!resp.ok) return res.status(502).send('Error al conectar con PandaScore: ' + resp.status);
+    const data = await resp.json();
+    res.send('API PandaScore OK. Equipos encontrados: ' + (Array.isArray(data) ? data.length : 0));
+  } catch (e) {
+    res.status(500).send('Error: ' + e.message);
+  }
+});
+
+app.get('/api/mantenimiento/reiniciar-backend', (req, res) => {
+  res.send('Reiniciando backend...');
+  setTimeout(() => {
+    process.exit(0);
+  }, 1000);
+});
+
+app.get('/api/mantenimiento/logs', (req, res) => {
+  try {
+    const logPath = path.join(__dirname, '../logs/server.log');
+    if (fs.existsSync(logPath)) {
+      const logs = fs.readFileSync(logPath, 'utf8');
+      res.type('text/plain').send(logs.slice(-4000));
+    } else {
+      res.send('No hay logs disponibles.');
+    }
+  } catch (e) {
+    res.status(500).send('Error al leer logs: ' + e.message);
+  }
+});
+
+app.get('/api/mantenimiento/estado', (req, res) => {
+  try {
+    // Estado básico: puerto, uptime, memoria
+    const estado = {
+      puerto: port,
+      uptime: process.uptime(),
+      memoria: process.memoryUsage(),
+      fecha: new Date().toISOString()
+    };
+    res.json(estado);
+  } catch (e) {
+    res.status(500).send('Error al consultar estado: ' + e.message);
+  }
+});
+
+app.get('/api/mantenimiento/actualizar', async (req, res) => {
+  try {
+    const { exec } = await import('child_process');
+    exec('npm install', { cwd: __dirname }, (err, stdout, stderr) => {
+      if (err) return res.status(500).send('Error al actualizar dependencias: ' + err.message);
+      res.type('text/plain').send(stdout + '\n' + stderr);
+    });
+  } catch (e) {
+    res.status(500).send('Error: ' + e.message);
+  }
+});
+
+// Endpoint para mostrar el estado de FlyQuest en la API (lee el log de monitorización)
+app.get('/api/mantenimiento/estado-flyquest', (req, res) => {
+  try {
+    const logPath = path.join(__dirname, 'logs', 'monitor_flyquest.log');
+    if (fs.existsSync(logPath)) {
+      const lines = fs.readFileSync(logPath, 'utf8').split('\n').filter(l => l.trim() !== '');
+      res.type('text/plain').send(lines.slice(-50).join('\n') || 'No hay registros de FlyQuest aún.');
+    } else {
+      res.send('No hay registros de FlyQuest aún.');
+    }
+  } catch (e) {
+    res.status(500).send('Error al leer estado FlyQuest: ' + e.message);
+  }
+});
