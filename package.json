@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "npm run docker:clean && npm run docker:up",
+    "start": "node server/index.js",
+    "start:prod": "node server/index.js",
+    "build": "cd frontend && npm install && npm run build",
     "docker:up": "docker-compose up --build -d",
     "docker:down": "docker-compose down",
     "docker:clean": "docker-compose down -v && docker system prune -f",

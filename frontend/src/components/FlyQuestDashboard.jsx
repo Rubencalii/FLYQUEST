@@ -7,6 +7,7 @@ import AdminDashboard from './AdminDashboard'
 
 function MatchCard({ match, timezone, showDate = false }) {
   const [hovered, setHovered] = useState(false)
+  const [imageErrors, setImageErrors] = useState({})
 
   const matchDate = new Date(match.startTime)
   const startLocal = matchDate.toLocaleString(undefined, {
@@ -83,11 +84,22 @@ function MatchCard({ match, timezone, showDate = false }) {
                 <React.Fragment key={t.name}>
                   <div className="flex items-center gap-3 flex-1">
                     <div className={`relative ${t.name.toLowerCase().includes('flyquest') ? 'animate-pulse-slow' : ''}`}>
-                      <img
-                        src={t.logo}
-                        alt={t.name}
-                        className="w-12 h-12 rounded-lg object-contain bg-white/5 p-1 transition-transform duration-300 group-hover:scale-110"
-                      />
+                      {t.logo && !imageErrors[t.name] ? (
+                        <img
+                          src={t.logo}
+                          alt={t.name}
+                          className="w-12 h-12 rounded-lg object-contain bg-white/5 p-1 transition-transform duration-300 group-hover:scale-110"
+                          onError={() => {
+                            console.warn(`❌ Error al cargar logo de ${t.name}:`, t.logo)
+                            setImageErrors(prev => ({ ...prev, [t.name]: true }))
+                          }}
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-gray-700 to-gray-900 dark:from-flyquest-dark to-flyquest-darker flex items-center justify-center font-bold text-white dark:text-flyquest-neon text-sm border-2 border-gray-600 dark:border-flyquest-neon/30 shadow-lg">
+                          {t.code || t.name.substring(0, 3).toUpperCase()}
+                        </div>
+                      )}
                       {t.name.toLowerCase().includes('flyquest') && (
                         <div className="absolute inset-0 rounded-lg bg-flyquest-green/20 dark:bg-flyquest-neon/20 blur-xl"></div>
                       )}
@@ -154,6 +166,7 @@ export default function FlyQuestDashboard() {
   const [error, setError] = useState(null)
   const [dateFilter, setDateFilter] = useState('all') // 'all', 'week', 'month'
   const [leagueFilter, setLeagueFilter] = useState('all') // 'all', 'lcs', 'worlds', 'msi', 'firststand'
+  const [headerLogoError, setHeaderLogoError] = useState(false)
 
   const fetchMatches = useCallback(async () => {
     try {
@@ -209,27 +222,26 @@ export default function FlyQuestDashboard() {
   }, [])
 
   useEffect(() => {
-    // Cargar logos primero
+    // Cargar logos (no bloqueante)
     fetch('/teamLogos.json')
       .then((r) => r.json())
       .then(setLogos)
-      .catch((e) => console.error('load logos', e))
+      .catch((e) => {
+        console.error('Error al cargar logos:', e)
+        setLogos({}) // Continuar sin logos personalizados
+      })
 
     // also prefetch roster summary for admin
     fetch('/rosterFlyQuest.json')
       .then((r) => r.json())
       .then((d) => setRosterData(d))
       .catch(() => { })
-  }, [])
 
-  useEffect(() => {
-    // Solo cargar partidos cuando los logos estén disponibles
-    if (Object.keys(logos).length > 0) {
-      fetchMatches()
-      const iv = setInterval(fetchMatches, 30000)
-      return () => clearInterval(iv)
-    }
-  }, [logos]) // Removido fetchMatches de las dependencias
+    // Cargar partidos inmediatamente (no esperar logos)
+    fetchMatches()
+    const iv = setInterval(fetchMatches, 30000)
+    return () => clearInterval(iv)
+  }, [])
 
   useEffect(() => {
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -243,14 +255,24 @@ export default function FlyQuestDashboard() {
     document.documentElement.classList.toggle('dark', dark)
   }, [dark])
 
-  // Combinar partidos con logos personalizados
+  // Combinar partidos con logos personalizados (priorizar API, luego personalizados, luego fallback)
   const matchesWithLogos = useMemo(() => {
     return matches.map(match => ({
       ...match,
-      teams: match.teams.map(team => ({
-        ...team,
-        logo: logos[team.name] || team.logo // Usar logo personalizado si existe, sino usar el del servidor
-      }))
+      teams: match.teams.map(team => {
+        // Prioridad: 1) Logo de API, 2) Logo personalizado, 3) Sin logo (se manejará con fallback)
+        let finalLogo = team.logo || logos[team.name] || null
+        
+        // Si el logo es de lolesports, usar el proxy de Akamai para mejor rendimiento
+        if (finalLogo && finalLogo.includes('static.lolesports.com')) {
+          finalLogo = `https://am-a.akamaihd.net/image?resize=60:&f=${encodeURIComponent(finalLogo)}`
+        }
+        
+        return {
+          ...team,
+          logo: finalLogo
+        }
+      })
     }))
   }, [matches, logos])
 
@@ -331,11 +353,21 @@ export default function FlyQuestDashboard() {
         <div className="flex items-center justify-between relative z-10">
           <div className="flex items-center gap-6">
             <div className="relative">
-              <img
-                src={logos.FlyQuest || 'https://upload.wikimedia.org/wikipedia/en/f/f7/FlyQuestlogo.png'}
-                alt="FlyQuest"
-                className="w-16 h-16 animate-pulse-slow drop-shadow-2xl"
-              />
+              {!headerLogoError ? (
+                <img
+                  src={logos.FlyQuest || 'https://upload.wikimedia.org/wikipedia/en/f/f7/FlyQuestlogo.png'}
+                  alt="FlyQuest"
+                  className="w-16 h-16 animate-pulse-slow drop-shadow-2xl object-contain"
+                  onError={() => {
+                    console.warn('❌ Error al cargar logo principal de FlyQuest')
+                    setHeaderLogoError(true)
+                  }}
+                />
+              ) : (
+                <div className="w-16 h-16 bg-gradient-to-br from-flyquest-green to-flyquest-neon rounded-xl flex items-center justify-center font-black text-white text-2xl animate-pulse-slow drop-shadow-2xl">
+                  FQ
+                </div>
+              )}
               <div className="absolute inset-0 bg-flyquest-green/20 dark:bg-flyquest-neon/30 blur-2xl rounded-full"></div>
             </div>
             <div>

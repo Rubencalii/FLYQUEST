@@ -13,8 +13,20 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const app = express()
-app.use(helmet())
+app.use(helmet({
+  contentSecurityPolicy: false, // Permitir assets en producción
+}))
 app.use(cors())
+app.use(express.json())
+
+// Servir archivos estáticos del frontend en producción
+const frontendPath = path.join(__dirname, '..', 'frontend', 'dist')
+if (fs.existsSync(frontendPath)) {
+  console.log('✅ Sirviendo frontend desde:', frontendPath)
+  app.use(express.static(frontendPath))
+} else {
+  console.log('⚠️ Frontend dist no encontrado, solo API disponible')
+}
 
 // LoL Esports API - No requiere API key personal, usa la key pública oficial
 const LOL_ESPORTS_API_KEY = '0TvQnueqKa5mxJntVWt0w4LpLfEkrV1Ta8rQBb9Z'
@@ -189,7 +201,6 @@ app.get('/api/flyquest/matches', async (req, res) => {
 // Bug reporting endpoint (public) with validation and atomic write + backup
 app.post(
   '/api/flyquest/bugs',
-  express.json(),
   body('title').isLength({ min: 3 }).trim().escape(),
   body('description').isLength({ min: 5 }).trim().escape(),
   body('url').optional().isURL().trim(),
@@ -238,9 +249,6 @@ app.get('/api/flyquest/bugs', (req, res) => {
     res.status(500).json({ error: 'could not read' })
   }
 })
-
-const port = process.env.PORT || 4001
-app.listen(port, () => console.log(`✅ Server running on port ${port}`))
 
 // Endpoints de mantenimiento
 app.get('/api/mantenimiento/test-api', async (req, res) => {
@@ -355,3 +363,23 @@ app.get('/api/mantenimiento/estado-flyquest', async (req, res) => {
     res.status(500).send('Error al consultar estado de FlyQuest: ' + e.message);
   }
 });
+
+// Catch-all route: Servir index.html para todas las rutas no API (SPA routing)
+app.get('*', (req, res) => {
+  const indexPath = path.join(frontendPath, 'index.html')
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath)
+  } else {
+    res.status(404).send('Frontend not built. Run: cd frontend && npm run build')
+  }
+})
+
+// Iniciar servidor
+const port = process.env.PORT || 4001
+app.listen(port, () => {
+  console.log(`✅ Server running on port ${port}`)
+  console.log(`📡 API: http://localhost:${port}/api/flyquest/matches`)
+  if (fs.existsSync(frontendPath)) {
+    console.log(`🎨 Frontend: http://localhost:${port}`)
+  }
+})

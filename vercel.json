@@ -1,0 +1,42 @@
+{
+  "version": 2,
+  "name": "flyquest-dashboard",
+  "builds": [
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    },
+    {
+      "src": "server/index.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/server/index.js"
+    },
+    {
+      "src": "/teamLogos.json",
+      "dest": "/frontend/public/teamLogos.json"
+    },
+    {
+      "src": "/rosterFlyQuest.json",
+      "dest": "/frontend/public/rosterFlyQuest.json"
+    },
+    {
+      "src": "/(.*\\..+)",
+      "dest": "/frontend/dist/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/frontend/dist/index.html"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
+}
