@@ -5,6 +5,7 @@
 **Fecha:** 18 de octubre de 2025  
 **Versión:** 2.0  
 **Nuevas Funcionalidades:**
+
 - ✅ Sistema de Logros/Achievements
 - ✅ Alertas Personalizadas Avanzadas
 - ✅ Comparador de Jugadores
@@ -22,6 +23,7 @@ docker-compose up -d --build
 ```
 
 ### Acceder a la aplicación:
+
 - **Frontend + Backend**: http://localhost:4001
 - **Panel de mantenimiento**: http://localhost:4001/mantenimiento
 
@@ -64,9 +66,9 @@ NODE_OPTIONS=--max-old-space-size=512
 
 ### Puertos Expuestos
 
-| Puerto | Servicio | Descripción |
-|--------|----------|-------------|
-| 4001 | app | Backend API + Frontend estático |
+| Puerto | Servicio | Descripción                     |
+| ------ | -------- | ------------------------------- |
+| 4001   | app      | Backend API + Frontend estático |
 
 ---
 
@@ -74,11 +76,12 @@ NODE_OPTIONS=--max-old-space-size=512
 
 ```yaml
 volumes:
-  app-data:      # Datos persistentes (bugs.json)
-  app-logs:      # Logs de la aplicación
+  app-data: # Datos persistentes (bugs.json)
+  app-logs: # Logs de la aplicación
 ```
 
 ### Ubicaciones en el contenedor:
+
 - `/app/server/data` → Datos de bugs y configuración
 - `/app/logs` → Logs del servidor
 - `/app/docs` → Documentación (CHARTJS_GUIDE.md, NUEVAS_FUNCIONALIDADES.md)
@@ -114,6 +117,7 @@ healthcheck:
 ## 📊 Optimizaciones Incluidas
 
 ### Frontend (Vite Build)
+
 - ✅ Tree-shaking automático
 - ✅ Code splitting por rutas
 - ✅ Minificación de JS/CSS
@@ -121,12 +125,14 @@ healthcheck:
 - ✅ Chart.js optimizado (bundle reducido)
 
 ### Backend (Node.js)
+
 - ✅ Solo dependencias de producción (`--only=production`)
 - ✅ Alpine Linux (imagen más ligera)
 - ✅ Multi-stage build (reduce tamaño final)
 - ✅ Cache de layers de Docker
 
 ### Tamaños de Imagen:
+
 - **Frontend build stage**: ~500MB (temporal)
 - **Imagen final**: ~180MB (optimizada)
 
@@ -433,6 +439,7 @@ frontend/src/components/
 - Total Chart.js bundle: ~65KB
 
 **Optimizaciones aplicadas:**
+
 - Tree-shaking de componentes no usados
 - Lazy loading de gráficos
 - useMemo para datos calculados
@@ -481,6 +488,7 @@ docker logs --tail 50 flyquest-app
 ## 📝 Changelog Docker
 
 ### v2.0 (18 Oct 2025)
+
 - ✅ Añadido Achievements component al build
 - ✅ Añadido AdvancedAlerts component al build
 - ✅ Añadido PlayerStats component al build
@@ -492,6 +500,7 @@ docker logs --tail 50 flyquest-app
 - ✅ .dockerignore actualizado
 
 ### v1.0 (Oct 2025)
+
 - Implementación inicial con multi-stage build
 - Frontend React + Backend Node.js
 - LoL Esports API integration

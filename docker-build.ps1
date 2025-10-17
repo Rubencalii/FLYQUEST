@@ -12,7 +12,8 @@ Write-Host ""
 try {
     docker --version | Out-Null
     Write-Host "✅ Docker detectado" -ForegroundColor Green
-} catch {
+}
+catch {
     Write-Host "❌ Error: Docker no está instalado o no está en PATH" -ForegroundColor Red
     exit 1
 }
@@ -20,7 +21,8 @@ try {
 try {
     docker-compose --version | Out-Null
     Write-Host "✅ Docker Compose detectado" -ForegroundColor Green
-} catch {
+}
+catch {
     Write-Host "❌ Error: Docker Compose no está instalado" -ForegroundColor Red
     exit 1
 }
@@ -45,7 +47,8 @@ $requiredFiles = @(
 foreach ($file in $requiredFiles) {
     if (Test-Path $file) {
         Write-Host "  ✓ $file" -ForegroundColor Green
-    } else {
+    }
+    else {
         Write-Host "  ✗ $file (no encontrado)" -ForegroundColor Red
         exit 1
     }
@@ -93,7 +96,8 @@ switch ($option) {
         try {
             $health = docker inspect --format='{{.State.Health.Status}}' flyquest-app 2>$null
             Write-Host "Estado: $health" -ForegroundColor Green
-        } catch {
+        }
+        catch {
             Write-Host "Esperando healthcheck..." -ForegroundColor Yellow
         }
         
@@ -131,7 +135,8 @@ switch ($option) {
             docker-compose down -v
             docker system prune -a -f
             Write-Host "✅ Limpieza completada" -ForegroundColor Green
-        } else {
+        }
+        else {
             Write-Host "Operación cancelada" -ForegroundColor Blue
         }
     }
