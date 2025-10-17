@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 
 export default function FlyQuestRoster() {
   const [data, setData] = useState(null)
+  const [imageErrors, setImageErrors] = useState({})
 
   useEffect(() => {
     fetch('/rosterFlyQuest.json')
@@ -10,35 +11,100 @@ export default function FlyQuestRoster() {
       .catch((e) => console.error('load roster', e))
   }, [])
 
-  if (!data) return <div>Cargando roster...</div>
+  const handleImageError = (name) => {
+    setImageErrors(prev => ({ ...prev, [name]: true }))
+  }
+
+  const getInitials = (name) => {
+    return name.split(' ').map(n => n[0]).join('').toUpperCase()
+  }
+
+  const getRoleEmoji = (role) => {
+    const emojis = {
+      'Top': '⚔️',
+      'Jungla': '🌲',
+      'Mid': '⚡',
+      'ADC': '🎯',
+      'Soporte': '🛡️'
+    }
+    return emojis[role] || '🎮'
+  }
+
+  if (!data) return (
+    <div className="text-center py-8">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-flyquest-neon mx-auto mb-3"></div>
+      <p className="text-flyquest-gray">Cargando roster...</p>
+    </div>
+  )
 
   return (
     <div>
-      <div className="mb-4">
-        <div className="text-lg font-semibold">{data.team} — {data.league} ({data.season})</div>
+      <div className="mb-6">
+        <div className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-flyquest-neon to-flyquest-green">
+          {data.team} — {data.league} {data.season}
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="space-y-3">
         {data.roster.map((p) => (
-          <div key={p.name} className="p-3 rounded-2xl shadow-xl bg-gradient-to-r from-flyquest-green to-flyquest-blue text-white">
-            <div className="flex items-center gap-3">
-              <img src={p.photo} alt={p.name} className="w-16 h-16 rounded-full border-2 border-white object-cover" />
-              <div>
-                <div className="font-bold">{p.name}</div>
-                <div className="text-sm">{p.role} • {p.country}</div>
+          <div key={p.name} className="group relative p-4 rounded-xl bg-gradient-to-r from-flyquest-neon/10 to-flyquest-green/5 border border-flyquest-neon/20 hover:border-flyquest-neon/50 transition-all hover:scale-[1.02] cursor-pointer">
+            <div className="flex items-center gap-4">
+              {/* Avatar con fallback */}
+              <div className="relative">
+                {!imageErrors[p.name] ? (
+                  <img
+                    src={p.photo}
+                    alt={p.name}
+                    className="w-16 h-16 rounded-full border-2 border-flyquest-neon object-cover bg-flyquest-dark"
+                    onError={() => handleImageError(p.name)}
+                    loading="lazy"
+                  />
+                ) : (
+                  <div className="w-16 h-16 rounded-full border-2 border-flyquest-neon bg-gradient-to-br from-flyquest-neon to-flyquest-green flex items-center justify-center">
+                    <span className="text-2xl font-black text-flyquest-black">{getInitials(p.name)}</span>
+                  </div>
+                )}
+                <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-flyquest-dark rounded-full flex items-center justify-center text-xs border border-flyquest-neon/50">
+                  {getRoleEmoji(p.role)}
+                </div>
+              </div>
+
+              <div className="flex-1">
+                <div className="font-bold text-lg text-flyquest-neon group-hover:text-flyquest-green transition-colors">{p.name}</div>
+                <div className="text-sm text-flyquest-gray flex items-center gap-2">
+                  <span className="font-semibold">{p.role}</span>
+                  <span className="text-flyquest-neon/50">•</span>
+                  <span>{p.country}</span>
+                </div>
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="mt-4 p-3 rounded-2xl shadow-inner bg-white/5 text-white">
-        <div className="font-semibold">Coach</div>
-        <div className="flex items-center gap-3 mt-2">
-          <img src={data.coach.photo} alt={data.coach.name} className="w-12 h-12 rounded-full" />
+      {/* Coach */}
+      <div className="mt-6 p-4 rounded-xl bg-gradient-to-r from-flyquest-blue-light/20 to-flyquest-neon/10 border border-flyquest-neon/30">
+        <div className="font-bold text-flyquest-neon mb-3 flex items-center gap-2">
+          <span className="text-xl">👔</span>
+          <span>Staff Técnico</span>
+        </div>
+        <div className="flex items-center gap-4">
+          {!imageErrors[data.coach.name] ? (
+            <img
+              src={data.coach.photo}
+              alt={data.coach.name}
+              className="w-12 h-12 rounded-full border-2 border-flyquest-neon/50 object-cover bg-flyquest-dark"
+              onError={() => handleImageError(data.coach.name)}
+              loading="lazy"
+            />
+          ) : (
+            <div className="w-12 h-12 rounded-full border-2 border-flyquest-neon/50 bg-gradient-to-br from-flyquest-blue to-flyquest-neon flex items-center justify-center">
+              <span className="text-lg font-black text-white">{getInitials(data.coach.name)}</span>
+            </div>
+          )}
           <div>
-            <div className="font-medium">{data.coach.name}</div>
-            <div className="text-sm">{data.coach.role}</div>
+            <div className="font-semibold text-flyquest-white">{data.coach.name}</div>
+            <div className="text-sm text-flyquest-gray">{data.coach.role}</div>
           </div>
         </div>
       </div>

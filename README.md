@@ -1,6 +1,27 @@
-# FlyQuest Dashboard
+# FlyQuest Dashboard - Live Edition 2025 🏆🔴
 
-Proyecto fullstack: frontend React + TailwindCSS y backend Express que consulta la Riot/LoL Esports API.
+Proyecto fullstack: frontend React + TailwindCSS y backend Express que muestra información **100% ACTUALIZADA** de **FlyQuest** en todas las competiciones.
+
+## 🌟 Características principales
+
+### 🔴 Datos en tiempo real
+- 📊 **Worlds 2025** - Campeonato Mundial en vivo
+- 🏆 **LCS** - Temporada actual de Norteamérica
+- 🌍 **MSI** - Mid-Season Invitational
+- � **Todas las competiciones** internacionales
+
+### ⚡ Actualización automática
+- 🔄 Consulta múltiples APIs de LoL Esports
+- ⏱️ Refresco automático cada 30 segundos
+- 📅 Partidos históricos y próximos
+- 🎮 Resultados en vivo durante los partidos
+
+### 🎨 Interfaz moderna
+- 📱 Diseño responsivo con TailwindCSS
+- 🌙 Modo oscuro/claro
+- 🌐 Multiidioma (ES/EN)
+- 🕐 Selector de zona horaria
+- 🐛 Sistema de reporte de bugs
 
 ## 🚀 Instrucciones rápidas (con Docker):
 
