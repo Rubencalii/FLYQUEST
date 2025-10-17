@@ -7,6 +7,7 @@ import AdminDashboard from './AdminDashboard'
 import FlyQuestStats from './FlyQuestStats'
 import StatsBoard from './StatsBoard'
 import TwitterFeed from './TwitterFeed'
+import NotificationManager from './NotificationManager'
 
 function MatchCard({ match, timezone, showDate = false, isFavorite = false, onToggleFavorite }) {
   const [hovered, setHovered] = useState(false)
@@ -719,6 +720,11 @@ export default function FlyQuestDashboard() {
                   </span>
                 )}
               </div>
+            </div>
+
+            {/* Notificaciones Push */}
+            <div className="mt-4 pt-4 border-t border-flyquest-green/20 dark:border-flyquest-neon/20">
+              <NotificationManager matches={matches} lang={lang} />
             </div>
           </div>
 
