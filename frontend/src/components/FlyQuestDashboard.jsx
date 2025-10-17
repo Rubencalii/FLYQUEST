@@ -26,6 +26,31 @@ function MatchCard({ match, timezone, showDate = false }) {
     day: 'numeric'
   })
 
+  // Función para generar link de Google Calendar
+  const generateGoogleCalendarLink = () => {
+    const startTime = new Date(match.startTime)
+    // Duración estimada: 1 hora para BO1, 2 horas para BO3, 3 horas para BO5
+    const durationHours = match.format === 'bo5' ? 3 : match.format === 'bo3' ? 2 : 1
+    const endTime = new Date(startTime.getTime() + durationHours * 60 * 60 * 1000)
+
+    // Formatear fechas para Google Calendar (formato: YYYYMMDDTHHmmssZ)
+    const formatDate = (date) => {
+      return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z'
+    }
+
+    const opponent = match.teams.find(t => !t.name.toLowerCase().includes('flyquest'))?.name || 'TBD'
+    const title = encodeURIComponent(`FlyQuest vs ${opponent} - ${match.league || 'LoL Esports'}`)
+    const details = encodeURIComponent(`
+🎮 ${match.league || 'League of Legends'}
+⚔️ FlyQuest vs ${opponent}
+📊 Formato: ${match.format?.toUpperCase() || 'BO1'}
+🔗 Ver en: https://lolesports.com/live/lcs
+    `.trim())
+    const location = encodeURIComponent('Online - lolesports.com')
+
+    return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${formatDate(startTime)}/${formatDate(endTime)}&details=${details}&location=${location}&sf=true&output=xml`
+  }
+
   // Determinar el estado del partido
   const getStatusBadge = () => {
     if (match.status === 'completed') {
@@ -178,14 +203,24 @@ function MatchCard({ match, timezone, showDate = false }) {
                   </>
                 )}
                 {(match.status === 'unstarted' || match.status === 'upcoming') && (
-                  <a
-                    href="https://lolesports.com/schedule"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold text-sm transition-all hover:scale-105 shadow-lg"
-                  >
-                    📅 Ver en Calendario
-                  </a>
+                  <>
+                    <a
+                      href="https://lolesports.com/schedule"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold text-sm transition-all hover:scale-105 shadow-lg"
+                    >
+                      📅 Ver en Calendario
+                    </a>
+                    <a
+                      href={generateGoogleCalendarLink()}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold text-sm transition-all hover:scale-105 shadow-lg"
+                    >
+                      🗓️ Añadir a Google Calendar
+                    </a>
+                  </>
                 )}
               </div>
             </div>
