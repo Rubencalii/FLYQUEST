@@ -7,6 +7,9 @@ import AdminDashboard from './AdminDashboard'
 import FlyQuestStats from './FlyQuestStats'
 import StatsBoard from './StatsBoard'
 import NotificationManager from './NotificationManager'
+import Achievements from './Achievements'
+import AdvancedAlerts from './AdvancedAlerts'
+import PlayerStats from './PlayerStats'
 
 function MatchCard({ match, timezone, showDate = false, isFavorite = false, onToggleFavorite }) {
   const [hovered, setHovered] = useState(false)
@@ -741,6 +744,25 @@ export default function FlyQuestDashboard() {
             {/* Notificaciones Push */}
             <div className="mt-4 pt-4 border-t border-flyquest-green/20 dark:border-flyquest-neon/20">
               <NotificationManager matches={matches} favorites={favorites} lang={lang} />
+              
+              {/* Alertas Avanzadas */}
+              <AdvancedAlerts 
+                matches={matches} 
+                favorites={favorites} 
+                lang={lang}
+                onSendNotification={(title, options) => {
+                  // Enviar notificación usando el API de NotificationManager
+                  if ('Notification' in window && Notification.permission === 'granted') {
+                    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                      navigator.serviceWorker.ready.then(reg => {
+                        reg.showNotification(title, options)
+                      })
+                    } else {
+                      new Notification(title, options)
+                    }
+                  }
+                }}
+              />
             </div>
           </div>
 
@@ -751,6 +773,12 @@ export default function FlyQuestDashboard() {
               
               {/* Dashboard de Gráficos Avanzados */}
               <StatsBoard matches={matches} lang={lang} dark={dark} />
+
+              {/* Sistema de Logros */}
+              <Achievements matches={matches} lang={lang} />
+
+              {/* Estadísticas de Jugadores */}
+              <PlayerStats matches={matches} lang={lang} dark={dark} />
             </div>
           )}
 
