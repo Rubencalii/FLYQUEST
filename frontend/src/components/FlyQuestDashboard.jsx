@@ -153,6 +153,7 @@ export default function FlyQuestDashboard() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [dateFilter, setDateFilter] = useState('all') // 'all', 'week', 'month'
+  const [leagueFilter, setLeagueFilter] = useState('all') // 'all', 'lcs', 'worlds', 'msi', 'firststand'
 
   const fetchMatches = useCallback(async () => {
     try {
@@ -165,27 +166,41 @@ export default function FlyQuestDashboard() {
       }
 
       const data = await res.json()
-      setMatches(data)
-      console.log('Matches loaded:', data.length)
+
+      // Sobrescribir logos del servidor con los logos personalizados de teamLogos.json
+      const matchesWithCustomLogos = data.map(match => ({
+        ...match,
+        teams: match.teams.map(team => ({
+          ...team,
+          logo: logos[team.name] || team.logo // Usar logo personalizado si existe, sino usar el del servidor
+        }))
+      }))
+
+      setMatches(matchesWithCustomLogos)
+      console.log('Matches loaded:', matchesWithCustomLogos.length)
     } catch (e) {
       console.error('fetch matches error:', e)
       setError(e.message || 'Error al cargar partidos')
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [logos])
 
   useEffect(() => {
-    fetchMatches()
-    const iv = setInterval(fetchMatches, 30000)
-    return () => clearInterval(iv)
-  }, [fetchMatches])
+    // Solo cargar partidos cuando los logos estén disponibles
+    if (Object.keys(logos).length > 0) {
+      fetchMatches()
+      const iv = setInterval(fetchMatches, 30000)
+      return () => clearInterval(iv)
+    }
+  }, [fetchMatches, logos])
 
   useEffect(() => {
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone
     setTimezone(tz)
-    // small list for selector
-    setTzList([tz, 'UTC', 'America/Los_Angeles', 'Europe/Madrid'])
+    // small list for selector - usar Set para evitar duplicados
+    const uniqueTimezones = [...new Set([tz, 'UTC', 'America/Los_Angeles', 'Europe/Madrid'])]
+    setTzList(uniqueTimezones)
   }, [])
 
   useEffect(() => {
@@ -205,7 +220,7 @@ export default function FlyQuestDashboard() {
     document.documentElement.classList.toggle('dark', dark)
   }, [dark])
 
-  // Función para filtrar partidos por fecha
+  // Función para filtrar partidos por fecha y liga
   const getFilteredMatches = () => {
     const now = new Date()
     const startOfWeek = new Date(now)
@@ -220,15 +235,36 @@ export default function FlyQuestDashboard() {
 
     let filtered = [...matches]
 
+    // Filtrar por fecha
     if (dateFilter === 'week') {
-      filtered = matches.filter(m => {
+      filtered = filtered.filter(m => {
         const matchDate = new Date(m.startTime)
         return matchDate >= startOfWeek && matchDate < endOfWeek
       })
     } else if (dateFilter === 'month') {
-      filtered = matches.filter(m => {
+      filtered = filtered.filter(m => {
         const matchDate = new Date(m.startTime)
         return matchDate >= startOfMonth && matchDate <= endOfMonth
+      })
+    }
+
+    // Filtrar por liga/competición
+    if (leagueFilter !== 'all') {
+      filtered = filtered.filter(m => {
+        const league = m.league?.toLowerCase() || ''
+
+        switch (leagueFilter) {
+          case 'lcs':
+            return league.includes('lcs') && !league.includes('worlds') && !league.includes('msi')
+          case 'worlds':
+            return league.includes('worlds') || league.includes('world')
+          case 'msi':
+            return league.includes('msi')
+          case 'firststand':
+            return league.includes('first') || league.includes('proving')
+          default:
+            return true
+        }
       })
     }
 
@@ -382,6 +418,60 @@ export default function FlyQuestDashboard() {
                   🗓️ Este mes
                 </span>
               </button>
+            </div>
+
+            {/* Filtro de competiciones */}
+            <div className="mt-4 pt-4 border-t border-flyquest-green/20 dark:border-flyquest-neon/20">
+              <h3 className="text-sm font-bold text-flyquest-green dark:text-flyquest-neon mb-3 uppercase tracking-wider">
+                🏆 Competición
+              </h3>
+              <div className="flex gap-2 flex-wrap">
+                <button
+                  onClick={() => setLeagueFilter('all')}
+                  className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-300 ${leagueFilter === 'all'
+                    ? 'bg-flyquest-green dark:bg-flyquest-neon text-white dark:text-flyquest-black shadow-lg'
+                    : 'bg-gray-100 dark:bg-flyquest-dark/30 text-gray-700 dark:text-flyquest-white hover:bg-gray-200 dark:hover:bg-flyquest-dark/50'
+                    }`}
+                >
+                  Todas
+                </button>
+                <button
+                  onClick={() => setLeagueFilter('lcs')}
+                  className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-300 ${leagueFilter === 'lcs'
+                    ? 'bg-flyquest-green dark:bg-flyquest-neon text-white dark:text-flyquest-black shadow-lg'
+                    : 'bg-gray-100 dark:bg-flyquest-dark/30 text-gray-700 dark:text-flyquest-white hover:bg-gray-200 dark:hover:bg-flyquest-dark/50'
+                    }`}
+                >
+                  LCS
+                </button>
+                <button
+                  onClick={() => setLeagueFilter('worlds')}
+                  className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-300 ${leagueFilter === 'worlds'
+                    ? 'bg-flyquest-green dark:bg-flyquest-neon text-white dark:text-flyquest-black shadow-lg'
+                    : 'bg-gray-100 dark:bg-flyquest-dark/30 text-gray-700 dark:text-flyquest-white hover:bg-gray-200 dark:hover:bg-flyquest-dark/50'
+                    }`}
+                >
+                  Worlds
+                </button>
+                <button
+                  onClick={() => setLeagueFilter('msi')}
+                  className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-300 ${leagueFilter === 'msi'
+                    ? 'bg-flyquest-green dark:bg-flyquest-neon text-white dark:text-flyquest-black shadow-lg'
+                    : 'bg-gray-100 dark:bg-flyquest-dark/30 text-gray-700 dark:text-flyquest-white hover:bg-gray-200 dark:hover:bg-flyquest-dark/50'
+                    }`}
+                >
+                  MSI
+                </button>
+                <button
+                  onClick={() => setLeagueFilter('firststand')}
+                  className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-300 ${leagueFilter === 'firststand'
+                    ? 'bg-flyquest-green dark:bg-flyquest-neon text-white dark:text-flyquest-black shadow-lg'
+                    : 'bg-gray-100 dark:bg-flyquest-dark/30 text-gray-700 dark:text-flyquest-white hover:bg-gray-200 dark:hover:bg-flyquest-dark/50'
+                    }`}
+                >
+                  First Stand
+                </button>
+              </div>
             </div>
           </div>
 

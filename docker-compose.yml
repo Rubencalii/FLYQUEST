@@ -3,13 +3,14 @@ services:
   server:
     build: ./server
     ports:
-      - '4000:4000'
+      - '4001:4001'
     environment:
       - RIOT_API_KEY=${RIOT_API_KEY}
+      - PORT=4001
 
   frontend:
     build: ./frontend
     ports:
-      - '3000:80'
+      - '3001:80'
     depends_on:
       - server

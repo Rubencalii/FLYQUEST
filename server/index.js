@@ -97,11 +97,11 @@ app.get('/api/flyquest/matches', async (req, res) => {
       return res.json(allMatches)
     }
 
-    console.log('⚠️  No se encontraron partidos en las APIs, usando datos de ejemplo actualizados...')
+    console.log('⚠️  No se encontraron partidos en las APIs, usando datos de respaldo...')
 
-
-    // DATOS DE RESPALDO - Partidos actuales de octubre 2025
-    const worldsMatches = [
+    // DATOS DE RESPALDO - Partidos 2025 de múltiples competiciones
+    const fallbackMatches = [
+      // ========== WORLDS 2025 (Septiembre-Octubre) ==========
       {
         id: 'worlds-2025-1',
         status: 'completed',
@@ -111,7 +111,7 @@ app.get('/api/flyquest/matches', async (req, res) => {
           { name: 'PSG Talon', code: 'PSG', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/d/d9/PSG_Talonlogo_square.png', score: 0 }
         ],
         format: 'Bo1',
-        league: 'Worlds 2025 - Play-In'
+        league: 'Worlds 2025'
       },
       {
         id: 'worlds-2025-2',
@@ -122,32 +122,10 @@ app.get('/api/flyquest/matches', async (req, res) => {
           { name: 'GAM Esports', code: 'GAM', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/6/6c/GAM_Esportslogo_square.png', score: 0 }
         ],
         format: 'Bo1',
-        league: 'Worlds 2025 - Play-In'
+        league: 'Worlds 2025'
       },
       {
         id: 'worlds-2025-3',
-        status: 'completed',
-        startTime: '2025-09-28T13:00:00Z',
-        teams: [
-          { name: 'FlyQuest', code: 'FLY', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/e/e5/FlyQuestlogo_square.png', score: 1 },
-          { name: 'Movistar R7', code: 'R7', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/1/19/Movistar_R7logo_square.png', score: 0 }
-        ],
-        format: 'Bo1',
-        league: 'Worlds 2025 - Play-In'
-      },
-      {
-        id: 'worlds-2025-4',
-        status: 'completed',
-        startTime: '2025-09-29T16:00:00Z',
-        teams: [
-          { name: 'FlyQuest', code: 'FLY', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/e/e5/FlyQuestlogo_square.png', score: 3 },
-          { name: 'PSG Talon', code: 'PSG', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/d/d9/PSG_Talonlogo_square.png', score: 1 }
-        ],
-        format: 'Bo5',
-        league: 'Worlds 2025 - Play-In Knockout'
-      },
-      {
-        id: 'worlds-2025-5',
         status: 'completed',
         startTime: '2025-10-03T12:00:00Z',
         teams: [
@@ -155,21 +133,10 @@ app.get('/api/flyquest/matches', async (req, res) => {
           { name: 'Gen.G', code: 'GEN', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/6/6e/Gen.Glogo_square.png', score: 1 }
         ],
         format: 'Bo1',
-        league: 'Worlds 2025 - Groups'
+        league: 'Worlds 2025'
       },
       {
-        id: 'worlds-2025-6',
-        status: 'completed',
-        startTime: '2025-10-05T14:00:00Z',
-        teams: [
-          { name: 'FlyQuest', code: 'FLY', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/e/e5/FlyQuestlogo_square.png', score: 1 },
-          { name: 'Weibo Gaming', code: 'WBG', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/7/7a/Weibo_Gaminglogo_square.png', score: 0 }
-        ],
-        format: 'Bo1',
-        league: 'Worlds 2025 - Groups'
-      },
-      {
-        id: 'worlds-2025-7',
+        id: 'worlds-2025-4',
         status: 'completed',
         startTime: '2025-10-10T15:00:00Z',
         teams: [
@@ -177,88 +144,153 @@ app.get('/api/flyquest/matches', async (req, res) => {
           { name: 'Dplus KIA', code: 'DK', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/4/43/Dplus_KIAlogo_square.png', score: 0 }
         ],
         format: 'Bo1',
-        league: 'Worlds 2025 - Groups'
+        league: 'Worlds 2025'
+      },
+
+      // ========== LCS SPRING 2025 (Enero-Marzo) ==========
+      {
+        id: 'lcs-spring-1',
+        status: 'completed',
+        startTime: '2025-01-15T22:00:00Z',
+        teams: [
+          { name: 'FlyQuest', code: 'FLY', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/e/e5/FlyQuestlogo_square.png', score: 2 },
+          { name: 'Team Liquid', code: 'TL', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/6/66/Team_Liquidlogo_square.png', score: 1 }
+        ],
+        format: 'Bo3',
+        league: 'LCS Spring'
       },
       {
-        id: 'worlds-2025-8',
+        id: 'lcs-spring-2',
         status: 'completed',
-        startTime: '2025-10-14T18:00:00Z',
+        startTime: '2025-02-05T23:00:00Z',
+        teams: [
+          { name: 'FlyQuest', code: 'FLY', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/e/e5/FlyQuestlogo_square.png', score: 2 },
+          { name: 'Cloud9', code: 'C9', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/8/88/Cloud9logo_square.png', score: 0 }
+        ],
+        format: 'Bo3',
+        league: 'LCS Spring'
+      },
+      {
+        id: 'lcs-spring-3',
+        status: 'completed',
+        startTime: '2025-03-10T22:30:00Z',
+        teams: [
+          { name: 'FlyQuest', code: 'FLY', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/e/e5/FlyQuestlogo_square.png', score: 3 },
+          { name: '100 Thieves', code: '100T', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/b/be/100_Thieveslogo_square.png', score: 1 }
+        ],
+        format: 'Bo5',
+        league: 'LCS Spring Playoffs'
+      },
+
+      // ========== MSI 2025 (Mayo) ==========
+      {
+        id: 'msi-2025-1',
+        status: 'completed',
+        startTime: '2025-05-02T14:00:00Z',
         teams: [
           { name: 'FlyQuest', code: 'FLY', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/e/e5/FlyQuestlogo_square.png', score: 1 },
-          { name: 'Gen.G', code: 'GEN', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/6/6e/Gen.Glogo_square.png', score: 0 }
+          { name: 'T1', code: 'T1', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/d/d5/T1logo_square.png', score: 0 }
         ],
         format: 'Bo1',
-        league: 'Worlds 2025 - Groups'
+        league: 'MSI 2025'
       },
       {
-        id: 'worlds-2025-9',
+        id: 'msi-2025-2',
         status: 'completed',
-        startTime: '2025-10-16T18:00:00Z',
+        startTime: '2025-05-08T16:00:00Z',
         teams: [
-          { name: 'FlyQuest', code: 'FLY', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/e/e5/FlyQuestlogo_square.png', score: 1 },
-          { name: 'Weibo Gaming', code: 'WBG', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/7/7a/Weibo_Gaminglogo_square.png', score: 0 }
+          { name: 'FlyQuest', code: 'FLY', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/e/e5/FlyQuestlogo_square.png', score: 0 },
+          { name: 'JD Gaming', code: 'JDG', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/d/d8/JD_Gaminglogo_square.png', score: 1 }
         ],
         format: 'Bo1',
-        league: 'Worlds 2025 - Groups'
+        league: 'MSI 2025'
+      },
+
+      // ========== LCS SUMMER 2025 (Junio-Agosto) ==========
+      {
+        id: 'lcs-summer-1',
+        status: 'completed',
+        startTime: '2025-06-12T22:00:00Z',
+        teams: [
+          { name: 'FlyQuest', code: 'FLY', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/e/e5/FlyQuestlogo_square.png', score: 2 },
+          { name: 'Dignitas', code: 'DIG', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/c/c4/Dignitaslogo_square.png', score: 1 }
+        ],
+        format: 'Bo3',
+        league: 'LCS Summer'
       },
       {
-        id: 'worlds-2025-10',
+        id: 'lcs-summer-2',
+        status: 'completed',
+        startTime: '2025-07-20T23:00:00Z',
+        teams: [
+          { name: 'FlyQuest', code: 'FLY', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/e/e5/FlyQuestlogo_square.png', score: 2 },
+          { name: 'Immortals', code: 'IMT', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/8/89/Immortalslogo_square.png', score: 0 }
+        ],
+        format: 'Bo3',
+        league: 'LCS Summer'
+      },
+
+      // ========== FIRST STAND (Proving Grounds) 2025 ==========
+      {
+        id: 'firststand-2025-1',
+        status: 'completed',
+        startTime: '2025-04-10T20:00:00Z',
+        teams: [
+          { name: 'FlyQuest', code: 'FLY', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/e/e5/FlyQuestlogo_square.png', score: 2 },
+          { name: 'Shopify Rebellion', code: 'SR', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/5/5a/Shopify_Rebellionlogo_square.png', score: 1 }
+        ],
+        format: 'Bo3',
+        league: 'First Stand'
+      },
+
+      // ========== PARTIDOS PRÓXIMOS (Octubre-Noviembre 2025) ==========
+      {
+        id: 'lcs-fall-1',
         status: 'upcoming',
         startTime: new Date(Date.now() + 86400000 * 2).toISOString(), // En 2 días
         teams: [
           { name: 'FlyQuest', code: 'FLY', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/e/e5/FlyQuestlogo_square.png', score: 0 },
-          { name: 'T1', code: 'T1', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/d/d5/T1logo_square.png', score: 0 }
+          { name: 'Team Liquid', code: 'TL', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/6/66/Team_Liquidlogo_square.png', score: 0 }
         ],
-        format: 'Bo5',
-        league: 'Worlds 2025 - Quarterfinals'
+        format: 'Bo3',
+        league: 'LCS Fall'
       },
       {
-        id: 'worlds-2025-11',
+        id: 'lcs-fall-2',
         status: 'upcoming',
         startTime: new Date(Date.now() + 86400000 * 5).toISOString(), // En 5 días
         teams: [
           { name: 'FlyQuest', code: 'FLY', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/e/e5/FlyQuestlogo_square.png', score: 0 },
           { name: 'Cloud9', code: 'C9', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/8/88/Cloud9logo_square.png', score: 0 }
         ],
-        format: 'Bo5',
-        league: 'Worlds 2025 - Quarterfinals'
+        format: 'Bo3',
+        league: 'LCS Fall'
       },
       {
-        id: 'worlds-2025-12',
-        status: 'unstarted',
-        startTime: '2025-10-26T15:00:00Z', // Posible semifinal
+        id: 'lcs-fall-3',
+        status: 'upcoming',
+        startTime: new Date(Date.now() + 86400000 * 7).toISOString(), // En 7 días
         teams: [
           { name: 'FlyQuest', code: 'FLY', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/e/e5/FlyQuestlogo_square.png', score: 0 },
-          { name: 'TBD', code: 'TBD', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/e/e5/FlyQuestlogo_square.png', score: 0 }
+          { name: '100 Thieves', code: '100T', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/b/be/100_Thieveslogo_square.png', score: 0 }
         ],
         format: 'Bo3',
-        league: 'LCS 2025 - Season 3'
+        league: 'LCS Fall'
       }
     ]
 
     // Ordenar por fecha, más recientes primero
-    worldsMatches.sort((a, b) => new Date(b.startTime) - new Date(a.startTime))
+    fallbackMatches.sort((a, b) => new Date(b.startTime) - new Date(a.startTime))
 
-    console.log(`📋 Devolviendo ${worldsMatches.length} partidos de respaldo (actualizados a octubre 2025)`)
-    return res.json(worldsMatches)
+    console.log(`📋 Devolviendo ${fallbackMatches.length} partidos de respaldo (LCS, Worlds, MSI, First Stand)`)
+    return res.json(fallbackMatches)
   } catch (e) {
     console.error('Server error fetching matches:', e.message)
 
-    // En caso de error, devolver datos de Worlds 2025
-    const worldsFallback = [
+    // En caso de error, devolver datos de respaldo mínimos
+    const emergencyFallback = [
       {
-        id: 'fallback-worlds-1',
-        status: 'completed',
-        startTime: '2025-09-25T12:00:00Z',
-        teams: [
-          { name: 'FlyQuest', code: 'FLY', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/e/e5/FlyQuestlogo_square.png', score: 1 },
-          { name: 'PSG Talon', code: 'PSG', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/d/d9/PSG_Talonlogo_square.png', score: 0 }
-        ],
-        format: 'Bo1',
-        league: 'Worlds 2025 - Play-In'
-      },
-      {
-        id: 'fallback-worlds-2',
+        id: 'emergency-1',
         status: 'completed',
         startTime: '2025-10-10T15:00:00Z',
         teams: [
@@ -266,23 +298,23 @@ app.get('/api/flyquest/matches', async (req, res) => {
           { name: 'Dplus KIA', code: 'DK', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/4/43/Dplus_KIAlogo_square.png', score: 0 }
         ],
         format: 'Bo1',
-        league: 'Worlds 2025 - Groups'
+        league: 'Worlds 2025'
       },
       {
-        id: 'fallback-worlds-3',
+        id: 'emergency-2',
         status: 'upcoming',
-        startTime: '2025-10-19T15:00:00Z',
+        startTime: new Date(Date.now() + 86400000 * 2).toISOString(),
         teams: [
           { name: 'FlyQuest', code: 'FLY', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/e/e5/FlyQuestlogo_square.png', score: 0 },
-          { name: 'T1', code: 'T1', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/d/d5/T1logo_square.png', score: 0 }
+          { name: 'Cloud9', code: 'C9', logo: 'https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/8/88/Cloud9logo_square.png', score: 0 }
         ],
-        format: 'Bo5',
-        league: 'Worlds 2025 - Quarterfinals'
+        format: 'Bo3',
+        league: 'LCS'
       }
     ]
 
-    console.log('Devolviendo datos de fallback de Worlds 2025')
-    res.json(worldsFallback)
+    console.log('⚠️  Error crítico - Devolviendo datos de emergencia')
+    res.json(emergencyFallback)
   }
 })// Bug reporting endpoint (public) with validation and atomic write + backup
 app.post(
