@@ -28,6 +28,15 @@ if (fs.existsSync(frontendPath)) {
   console.log('⚠️ Frontend dist no encontrado, solo API disponible')
 }
 
+// Servir archivos de mantenimiento desde /mantenimiento
+const scriptsPath = path.join(__dirname, '..', 'scripts')
+if (fs.existsSync(scriptsPath)) {
+  console.log('✅ Panel de mantenimiento disponible en /mantenimiento')
+  app.use('/mantenimiento', express.static(scriptsPath))
+} else {
+  console.log('⚠️ Carpeta scripts no encontrada')
+}
+
 // LoL Esports API - No requiere API key personal, usa la key pública oficial
 const LOL_ESPORTS_API_KEY = '0TvQnueqKa5mxJntVWt0w4LpLfEkrV1Ta8rQBb9Z'
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'admin_secret_token'
