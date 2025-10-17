@@ -1,16 +1,21 @@
-const express = require('express')
-const fetch = require('node-fetch')
-const cors = require('cors')
-const helmet = require('helmet')
-const { body, validationResult } = require('express-validator')
+import express from 'express'
+import fetch from 'node-fetch'
+import cors from 'cors'
+import helmet from 'helmet'
+import { body, validationResult } from 'express-validator'
+import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
 const app = express()
 app.use(helmet())
 app.use(cors())
 
 const RIOT_API_KEY = process.env.RIOT_API_KEY || 'REPLACE_WITH_YOUR_KEY'
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'admin_secret_token'
-const fs = require('fs')
-const path = require('path')
 const bugsFile = path.join(__dirname, 'data', 'bugs.json')
 
 // ensure data directory and file exist
