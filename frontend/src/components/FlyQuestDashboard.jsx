@@ -6,7 +6,6 @@ import BugReport from './BugReport'
 import AdminDashboard from './AdminDashboard'
 import FlyQuestStats from './FlyQuestStats'
 import StatsBoard from './StatsBoard'
-import TwitterFeed from './TwitterFeed'
 import NotificationManager from './NotificationManager'
 
 function MatchCard({ match, timezone, showDate = false, isFavorite = false, onToggleFavorite }) {
@@ -743,9 +742,6 @@ export default function FlyQuestDashboard() {
               
               {/* Dashboard de Gráficos Avanzados */}
               <StatsBoard matches={matches} lang={lang} dark={dark} />
-              
-              {/* Feed de Twitter */}
-              <TwitterFeed lang={lang} dark={dark} />
             </div>
           )}
 
