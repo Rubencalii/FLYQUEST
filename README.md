@@ -1,19 +1,19 @@
 # FlyQuest Dashboard - Live Edition 2025 🏆🔴
 
-Proyecto fullstack: frontend React + TailwindCSS y backend Express que muestra información **100% ACTUALIZADA** de **FlyQuest** en todas las competiciones usando PandaScore API.
+Proyecto fullstack: frontend React + TailwindCSS y backend Express que muestra información **100% ACTUALIZADA** de **FlyQuest** en todas las competiciones usando **LoL Esports Official API** (Riot Games).
 
 ## 🌟 Características principales
 
 ### 🔴 Datos en tiempo real
 - 📊 **Worlds 2025** - Campeonato Mundial en vivo
-- 🏆 **LCS** - Temporada actual de Norteamérica
+- 🏆 **LTA North** - Temporada actual de Norteamérica
 - 🌍 **MSI** - Mid-Season Invitational
 - 🎮 **Todas las competiciones** internacionales
 
 ### ⚡ Actualización automática
-- 🔄 Integración con PandaScore API
+- 🔄 Integración con **LoL Esports Official API** (Riot Games)
 - ⏱️ Refresco automático cada 30 segundos
-- 📅 Partidos históricos y próximos del año actual
+- 📅 Partidos históricos y próximos (últimos 3 meses)
 - 🎮 Resultados en vivo durante los partidos
 
 ### 🎨 Interfaz moderna
@@ -40,14 +40,16 @@ Proyecto fullstack: frontend React + TailwindCSS y backend Express que muestra i
 
 ### 1️⃣ Configuración inicial
 
-Crea el archivo de variables de entorno en `server/.env`:
+**¡No necesitas configurar nada!** La API de LoL Esports usa una key pública que ya está incluida.
+
+(Opcional) Si quieres personalizar el token de administrador, crea `server/.env`:
 
 ```bash
-# API de PandaScore (obligatorio)
-PANDASCORE_API_KEY=tu_token_de_pandascore
-
 # Token de administrador (opcional)
 ADMIN_TOKEN=tu_token_admin_secreto
+
+# La API key de LoL Esports ya está incluida en el código
+# LOL_ESPORTS_API_KEY=0TvQnueqKa5mxJntVWt0w4LpLfEkrV1Ta8rQBb9Z
 ```
 
 ### 2️⃣ Deployment automático
