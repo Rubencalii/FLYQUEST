@@ -48,10 +48,10 @@ function MatchCard({ match, timezone, showDate = false }) {
         <div className="mt-6 mb-4 animate-slide-in">
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t-2 border-flyquest-neon/30"></div>
+              <div className="w-full border-t-2 border-flyquest-green/30 dark:border-flyquest-neon/30"></div>
             </div>
             <div className="relative flex justify-center">
-              <span className="bg-gradient-to-r from-flyquest-black via-flyquest-dark to-flyquest-black px-6 py-2 text-sm font-bold text-flyquest-neon uppercase tracking-wider border border-flyquest-neon/30 rounded-full">
+              <span className="bg-gradient-to-r from-gray-50 via-white to-gray-50 dark:from-flyquest-black dark:via-flyquest-dark dark:to-flyquest-black px-6 py-2 text-sm font-bold text-flyquest-green dark:text-flyquest-neon uppercase tracking-wider border border-flyquest-green/30 dark:border-flyquest-neon/30 rounded-full">
                 📅 {dateLabel}
               </span>
             </div>
@@ -59,14 +59,14 @@ function MatchCard({ match, timezone, showDate = false }) {
         </div>
       )}
       <div
-        className={`card mb-4 cursor-pointer relative overflow-hidden group animate-fade-in ${isFlyQuestMatch ? 'border-2 border-flyquest-neon/50 scan-effect' : ''
+        className={`card mb-4 cursor-pointer relative overflow-hidden group animate-fade-in ${isFlyQuestMatch ? 'border-2 border-flyquest-green/50 dark:border-flyquest-neon/50 scan-effect' : ''
           }`}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
         {/* Efecto de brillo de fondo */}
         {isFlyQuestMatch && (
-          <div className="absolute inset-0 bg-gradient-to-r from-flyquest-neon/5 via-transparent to-flyquest-neon/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-flyquest-green/5 via-transparent to-flyquest-green/5 dark:from-flyquest-neon/5 dark:via-transparent dark:to-flyquest-neon/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
         )}
 
         <div className="relative z-10">
@@ -89,31 +89,31 @@ function MatchCard({ match, timezone, showDate = false }) {
                         className="w-12 h-12 rounded-lg object-contain bg-white/5 p-1 transition-transform duration-300 group-hover:scale-110"
                       />
                       {t.name.toLowerCase().includes('flyquest') && (
-                        <div className="absolute inset-0 rounded-lg bg-flyquest-neon/20 blur-xl"></div>
+                        <div className="absolute inset-0 rounded-lg bg-flyquest-green/20 dark:bg-flyquest-neon/20 blur-xl"></div>
                       )}
                     </div>
                     <div className="flex-1">
-                      <div className={`font-bold text-base ${t.name.toLowerCase().includes('flyquest') ? 'text-flyquest-neon' : ''}`}>
+                      <div className="font-bold text-base text-flyquest-green dark:text-flyquest-neon">
                         {t.name}
                       </div>
                       <div className="flex items-center gap-2 mt-1">
-                        <span className="text-2xl font-black text-flyquest-neon">{t.score ?? '-'}</span>
+                        <span className="text-2xl font-black text-flyquest-green dark:text-flyquest-neon">{t.score ?? '-'}</span>
                         {match.status === 'completed' && t.score > (match.teams[1 - idx]?.score ?? 0) && (
-                          <span className="text-xs font-bold text-yellow-500">👑 WINNER</span>
+                          <span className="text-xs font-bold text-yellow-600 dark:text-yellow-500">👑 WINNER</span>
                         )}
                       </div>
                     </div>
                   </div>
                   {idx === 0 && (
-                    <div className="text-2xl font-black text-flyquest-gray/30 mx-2">VS</div>
+                    <div className="text-2xl font-black text-gray-300 dark:text-flyquest-gray/30 mx-2">VS</div>
                   )}
                 </React.Fragment>
               ))}
             </div>
             <div className="text-right ml-6">
-              <div className="text-sm font-medium text-flyquest-gray">{startLocal}</div>
+              <div className="text-sm font-medium text-gray-600 dark:text-flyquest-gray">{startLocal}</div>
               {match.league && (
-                <div className="text-xs font-semibold text-flyquest-neon/80 mt-1 px-2 py-0.5 bg-flyquest-neon/10 rounded inline-block">
+                <div className="text-xs font-semibold text-flyquest-green dark:text-flyquest-neon/80 mt-1 px-2 py-0.5 bg-flyquest-green/10 dark:bg-flyquest-neon/10 rounded inline-block">
                   {match.league}
                 </div>
               )}
@@ -121,15 +121,15 @@ function MatchCard({ match, timezone, showDate = false }) {
           </div>
 
           {hovered && (
-            <div className="mt-4 pt-4 border-t border-flyquest-neon/20 animate-fade-in">
+            <div className="mt-4 pt-4 border-t border-flyquest-green/20 dark:border-flyquest-neon/20 animate-fade-in">
               <div className="flex justify-between text-sm">
                 <div className="flex items-center gap-2">
-                  <span className="text-flyquest-gray">Formato:</span>
-                  <span className="font-bold text-flyquest-neon">{match.format || 'BO1'}</span>
+                  <span className="text-gray-600 dark:text-flyquest-gray">Formato:</span>
+                  <span className="font-bold text-flyquest-green dark:text-flyquest-neon">{match.format || 'BO1'}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-flyquest-gray">UTC:</span>
-                  <span className="font-mono text-flyquest-white">{new Date(match.startTime).toUTCString().slice(17, 22)}</span>
+                  <span className="text-gray-600 dark:text-flyquest-gray">UTC:</span>
+                  <span className="font-mono text-gray-800 dark:text-flyquest-white">{new Date(match.startTime).toUTCString().slice(17, 22)}</span>
                 </div>
               </div>
             </div>
@@ -252,11 +252,11 @@ export default function FlyQuestDashboard() {
   }
 
   return (
-    <div className="min-h-screen p-6 gradient-animated">
+    <div className="min-h-screen p-6">
       {/* Header espectacular con efecto glassmorphism */}
-      <header className="card mb-8 p-6 relative overflow-hidden animate-slide-in border-2 border-flyquest-neon/30">
+      <header className="card mb-8 p-6 relative overflow-hidden animate-slide-in border-2 border-flyquest-green/30 dark:border-flyquest-neon/30">
         {/* Efecto de brillo de fondo */}
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-flyquest-neon to-transparent"></div>
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-flyquest-green to-transparent dark:via-flyquest-neon"></div>
 
         <div className="flex items-center justify-between relative z-10">
           <div className="flex items-center gap-6">
@@ -266,15 +266,15 @@ export default function FlyQuestDashboard() {
                 alt="FlyQuest"
                 className="w-16 h-16 animate-pulse-slow drop-shadow-2xl"
               />
-              <div className="absolute inset-0 bg-flyquest-neon/30 blur-2xl rounded-full"></div>
+              <div className="absolute inset-0 bg-flyquest-green/20 dark:bg-flyquest-neon/30 blur-2xl rounded-full"></div>
             </div>
             <div>
-              <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-flyquest-neon via-flyquest-green to-flyquest-neon animate-glow">
+              <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-flyquest-green via-emerald-600 to-flyquest-green dark:from-flyquest-neon dark:via-flyquest-green dark:to-flyquest-neon">
                 FlyQuest Dashboard
               </h1>
-              <div className="text-sm text-flyquest-gray mt-1 flex items-center gap-2">
-                <span className="inline-block w-2 h-2 bg-flyquest-neon rounded-full animate-pulse"></span>
-                Horario: <span className="font-semibold text-flyquest-neon">{timezone}</span>
+              <div className="text-sm text-gray-600 dark:text-flyquest-gray mt-1 flex items-center gap-2">
+                <span className="inline-block w-2 h-2 bg-flyquest-green dark:bg-flyquest-neon rounded-full animate-pulse"></span>
+                Horario: <span className="font-semibold text-flyquest-green dark:text-flyquest-neon">{timezone}</span>
               </div>
             </div>
           </div>
@@ -282,42 +282,42 @@ export default function FlyQuestDashboard() {
           <div className="flex items-center gap-3 flex-wrap">
             <button
               onClick={toggleLanguage}
-              className="px-4 py-2 rounded-xl bg-flyquest-dark/50 hover:bg-flyquest-neon/20 border border-flyquest-neon/30 text-flyquest-white font-semibold transition-all hover:scale-105 hover:shadow-lg hover:shadow-flyquest-neon/50"
+              className="px-4 py-2 rounded-xl bg-gray-100 dark:bg-flyquest-dark/50 hover:bg-flyquest-green/10 dark:hover:bg-flyquest-neon/20 border border-flyquest-green/30 dark:border-flyquest-neon/30 text-gray-800 dark:text-flyquest-white font-semibold transition-all hover:scale-105 hover:shadow-lg"
             >
               {lang === 'es' ? 'ES 🇪🇸' : 'EN 🇺🇸'}
             </button>
             <select
               value={timezone}
               onChange={(e) => setTimezone(e.target.value)}
-              className="px-4 py-2 rounded-xl bg-flyquest-dark/50 border border-flyquest-neon/30 text-flyquest-white font-medium cursor-pointer hover:border-flyquest-neon/50 transition-all"
+              className="px-4 py-2 rounded-xl bg-gray-100 dark:bg-flyquest-dark/50 border border-flyquest-green/30 dark:border-flyquest-neon/30 text-gray-800 dark:text-flyquest-white font-medium cursor-pointer hover:border-flyquest-green/50 dark:hover:border-flyquest-neon/50 transition-all"
             >
               {tzList.map((tz) => (
-                <option key={tz} value={tz} className="bg-flyquest-darker">
+                <option key={tz} value={tz} className="bg-white dark:bg-flyquest-darker">
                   {tz}
                 </option>
               ))}
             </select>
             <button
               onClick={fetchMatches}
-              className="px-4 py-2 rounded-xl bg-flyquest-neon/10 hover:bg-flyquest-neon/20 border border-flyquest-neon/50 text-flyquest-neon font-bold transition-all hover:scale-105 hover:shadow-lg hover:shadow-flyquest-neon/50"
+              className="px-4 py-2 rounded-xl bg-flyquest-green/10 dark:bg-flyquest-neon/10 hover:bg-flyquest-green/20 dark:hover:bg-flyquest-neon/20 border border-flyquest-green/50 dark:border-flyquest-neon/50 text-flyquest-green dark:text-flyquest-neon font-bold transition-all hover:scale-105 hover:shadow-lg"
             >
               🔄 {t.refresh}
             </button>
             <button
               onClick={() => setDark((d) => !d)}
-              className="px-4 py-2 rounded-xl bg-flyquest-dark/50 hover:bg-flyquest-neon/20 border border-flyquest-neon/30 text-2xl transition-all hover:scale-110 hover:rotate-180 duration-500"
+              className="px-4 py-2 rounded-xl bg-gray-100 dark:bg-flyquest-dark/50 hover:bg-flyquest-green/10 dark:hover:bg-flyquest-neon/20 border border-flyquest-green/30 dark:border-flyquest-neon/30 text-2xl transition-all hover:scale-110 hover:rotate-180 duration-500"
             >
               {dark ? '☀️' : '🌙'}
             </button>
             <button
               onClick={() => setShowBugForm((s) => !s)}
-              className="px-4 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/50 text-red-400 font-semibold transition-all hover:scale-105"
+              className="px-4 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/50 text-red-600 dark:text-red-400 font-semibold transition-all hover:scale-105"
             >
               🐛 Reportar
             </button>
             <button
               onClick={() => setShowAdmin((s) => !s)}
-              className="px-4 py-2 rounded-xl bg-gradient-to-r from-flyquest-neon to-flyquest-green text-flyquest-black font-bold transition-all hover:scale-105 hover:shadow-lg hover:shadow-flyquest-neon/50"
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-flyquest-green to-emerald-500 dark:from-flyquest-neon dark:to-flyquest-green text-white dark:text-flyquest-black font-bold transition-all hover:scale-105 hover:shadow-lg"
             >
               ⚙️ Admin
             </button>
@@ -328,16 +328,16 @@ export default function FlyQuestDashboard() {
       <main className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <section className="md:col-span-2">
           {/* Sección de filtros espectacular */}
-          <div className="card p-6 mb-6 animate-slide-in border border-flyquest-neon/20">
+          <div className="card p-6 mb-6 animate-slide-in border border-flyquest-green/20 dark:border-flyquest-neon/20">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-flyquest-neon to-flyquest-green">
+              <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-flyquest-green to-emerald-600 dark:from-flyquest-neon dark:to-flyquest-green">
                 ⚔️ {t.matches}
               </h2>
 
               {/* Contador animado */}
               {matches.length > 0 && (
-                <div className="px-4 py-2 bg-flyquest-neon/10 border border-flyquest-neon/30 rounded-full">
-                  <span className="text-sm font-bold text-flyquest-neon">
+                <div className="px-4 py-2 bg-flyquest-green/10 dark:bg-flyquest-neon/10 border border-flyquest-green/30 dark:border-flyquest-neon/30 rounded-full">
+                  <span className="text-sm font-bold text-flyquest-green dark:text-flyquest-neon">
                     {getFilteredMatches().length} / {matches.length} partidos
                   </span>
                 </div>
@@ -349,11 +349,11 @@ export default function FlyQuestDashboard() {
               <button
                 onClick={() => setDateFilter('all')}
                 className={`group relative px-6 py-3 rounded-xl font-bold transition-all duration-300 ${dateFilter === 'all'
-                  ? 'bg-gradient-to-r from-flyquest-neon to-flyquest-green text-flyquest-black shadow-lg shadow-flyquest-neon/50 scale-105'
-                  : 'bg-flyquest-dark/30 text-flyquest-white hover:bg-flyquest-dark/50 border border-flyquest-neon/20 hover:border-flyquest-neon/50'
+                  ? 'bg-gradient-to-r from-flyquest-green to-emerald-500 dark:from-flyquest-neon dark:to-flyquest-green text-white dark:text-flyquest-black shadow-lg scale-105'
+                  : 'bg-gray-100 dark:bg-flyquest-dark/30 text-gray-700 dark:text-flyquest-white hover:bg-gray-200 dark:hover:bg-flyquest-dark/50 border border-flyquest-green/20 dark:border-flyquest-neon/20 hover:border-flyquest-green/50 dark:hover:border-flyquest-neon/50'
                   }`}
               >
-                {dateFilter === 'all' && <span className="absolute inset-0 rounded-xl bg-flyquest-neon/20 blur-xl"></span>}
+                {dateFilter === 'all' && <span className="absolute inset-0 rounded-xl bg-flyquest-green/20 dark:bg-flyquest-neon/20 blur-xl"></span>}
                 <span className="relative flex items-center gap-2">
                   📅 Todos
                 </span>
@@ -361,11 +361,11 @@ export default function FlyQuestDashboard() {
               <button
                 onClick={() => setDateFilter('week')}
                 className={`group relative px-6 py-3 rounded-xl font-bold transition-all duration-300 ${dateFilter === 'week'
-                  ? 'bg-gradient-to-r from-flyquest-neon to-flyquest-green text-flyquest-black shadow-lg shadow-flyquest-neon/50 scale-105'
-                  : 'bg-flyquest-dark/30 text-flyquest-white hover:bg-flyquest-dark/50 border border-flyquest-neon/20 hover:border-flyquest-neon/50'
+                  ? 'bg-gradient-to-r from-flyquest-green to-emerald-500 dark:from-flyquest-neon dark:to-flyquest-green text-white dark:text-flyquest-black shadow-lg scale-105'
+                  : 'bg-gray-100 dark:bg-flyquest-dark/30 text-gray-700 dark:text-flyquest-white hover:bg-gray-200 dark:hover:bg-flyquest-dark/50 border border-flyquest-green/20 dark:border-flyquest-neon/20 hover:border-flyquest-green/50 dark:hover:border-flyquest-neon/50'
                   }`}
               >
-                {dateFilter === 'week' && <span className="absolute inset-0 rounded-xl bg-flyquest-neon/20 blur-xl"></span>}
+                {dateFilter === 'week' && <span className="absolute inset-0 rounded-xl bg-flyquest-green/20 dark:bg-flyquest-neon/20 blur-xl"></span>}
                 <span className="relative flex items-center gap-2">
                   📆 Esta semana
                 </span>
@@ -373,11 +373,11 @@ export default function FlyQuestDashboard() {
               <button
                 onClick={() => setDateFilter('month')}
                 className={`group relative px-6 py-3 rounded-xl font-bold transition-all duration-300 ${dateFilter === 'month'
-                  ? 'bg-gradient-to-r from-flyquest-neon to-flyquest-green text-flyquest-black shadow-lg shadow-flyquest-neon/50 scale-105'
-                  : 'bg-flyquest-dark/30 text-flyquest-white hover:bg-flyquest-dark/50 border border-flyquest-neon/20 hover:border-flyquest-neon/50'
+                  ? 'bg-gradient-to-r from-flyquest-green to-emerald-500 dark:from-flyquest-neon dark:to-flyquest-green text-white dark:text-flyquest-black shadow-lg scale-105'
+                  : 'bg-gray-100 dark:bg-flyquest-dark/30 text-gray-700 dark:text-flyquest-white hover:bg-gray-200 dark:hover:bg-flyquest-dark/50 border border-flyquest-green/20 dark:border-flyquest-neon/20 hover:border-flyquest-green/50 dark:hover:border-flyquest-neon/50'
                   }`}
               >
-                {dateFilter === 'month' && <span className="absolute inset-0 rounded-xl bg-flyquest-neon/20 blur-xl"></span>}
+                {dateFilter === 'month' && <span className="absolute inset-0 rounded-xl bg-flyquest-green/20 dark:bg-flyquest-neon/20 blur-xl"></span>}
                 <span className="relative flex items-center gap-2">
                   🗓️ Este mes
                 </span>
@@ -418,17 +418,17 @@ export default function FlyQuestDashboard() {
           {!loading && !error && (
             <div>
               {getFilteredMatches().length === 0 && (
-                <div className="card text-center py-16 border-2 border-flyquest-neon/20 animate-fade-in relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-flyquest-neon/5 to-transparent"></div>
+                <div className="card text-center py-16 border-2 border-flyquest-green/20 dark:border-flyquest-neon/20 animate-fade-in relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-flyquest-green/5 to-transparent dark:from-flyquest-neon/5 dark:to-transparent"></div>
                   <div className="relative z-10">
                     <div className="text-7xl mb-4 animate-bounce-slow">📅</div>
-                    <p className="text-2xl font-bold text-flyquest-neon mb-2">
+                    <p className="text-2xl font-bold text-flyquest-green dark:text-flyquest-neon mb-2">
                       No hay partidos
                       {dateFilter === 'week' && ' esta semana'}
                       {dateFilter === 'month' && ' este mes'}
                       {dateFilter === 'all' && ' programados'}
                     </p>
-                    <p className="text-flyquest-gray">Intenta con otro filtro de fecha</p>
+                    <p className="text-gray-600 dark:text-flyquest-gray">Intenta con otro filtro de fecha</p>
                   </div>
                 </div>
               )}
@@ -463,10 +463,10 @@ export default function FlyQuestDashboard() {
         <aside className="space-y-6">
           {/* Roster con diseño mejorado */}
           <div className="animate-slide-in" style={{ animationDelay: '0.1s' }}>
-            <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-flyquest-neon to-flyquest-green mb-4 flex items-center gap-2">
+            <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-flyquest-green to-emerald-600 dark:from-flyquest-neon dark:to-flyquest-green mb-4 flex items-center gap-2">
               👥 {t.roster}
             </h2>
-            <div className="card border-2 border-flyquest-neon/20 hover:border-flyquest-neon/40 transition-all">
+            <div className="card border-2 border-flyquest-green/20 dark:border-flyquest-neon/20 hover:border-flyquest-green/40 dark:hover:border-flyquest-neon/40 transition-all">
               <FlyQuestRoster />
             </div>
           </div>

@@ -224,7 +224,7 @@ app.get('/api/flyquest/matches', async (req, res) => {
         league: 'Worlds 2025 - Quarterfinals'
       },
       {
-        id: 'worlds-2025-10',
+        id: 'worlds-2025-12',
         status: 'unstarted',
         startTime: '2025-10-26T15:00:00Z', // Posible semifinal
         teams: [
@@ -337,5 +337,5 @@ app.get('/api/flyquest/bugs', (req, res) => {
   }
 })
 
-const port = process.env.PORT || 4000
-app.listen(port, () => console.log('Server running on', port))
+const port = process.env.PORT || 4001
+app.listen(port, () => console.log(`✅ Server running on port ${port}`))

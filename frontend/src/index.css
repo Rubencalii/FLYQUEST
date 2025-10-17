@@ -15,7 +15,7 @@
 
 body {
   font-family: 'Inter', sans-serif;
-  background: linear-gradient(135deg, #0A0E12 0%, #151922 100%);
+  background: linear-gradient(135deg, #F8FAFC 0%, #EFF6FF 100%);
   background-attachment: fixed;
   transition: var(--transition);
   min-height: 100vh;
@@ -33,13 +33,14 @@ body {
   border-radius: 1rem;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1), 0 1px 8px rgba(0, 0, 0, 0.06);
   padding: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(0, 214, 107, 0.15);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), 0 0 20px rgba(0, 255, 133, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), 0 0 20px rgba(0, 255, 133, 0.15);
+  border-color: rgba(0, 214, 107, 0.3);
 }
 
 .dark .card {
