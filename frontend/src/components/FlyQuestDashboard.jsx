@@ -4,6 +4,7 @@ import FlyQuestRoster from './FlyQuestRoster'
 import FooterFlyQuest from './FooterFlyQuest'
 import BugReport from './BugReport'
 import AdminDashboard from './AdminDashboard'
+import FlyQuestStats from './FlyQuestStats'
 
 function MatchCard({ match, timezone, showDate = false }) {
   const [hovered, setHovered] = useState(false)
@@ -619,6 +620,13 @@ export default function FlyQuestDashboard() {
               </div>
             </div>
           </div>
+
+          {/* Estadísticas de FlyQuest */}
+          {!loading && !error && matches.length > 0 && (
+            <div className="animate-fade-in">
+              <FlyQuestStats matches={matches} lang={lang} />
+            </div>
+          )}
 
           {loading && (
             <div className="card text-center py-12 border-2 border-flyquest-neon/30 animate-pulse">

@@ -94,65 +94,90 @@ docker-compose ps
 
 ## 🌐 Acceso a los servicios
 
-Una vez iniciados los contenedores:
+**Arquitectura actualizada (2025)**: Todo se sirve desde un solo puerto
 
-| Servicio          | URL                   | Descripción                         |
-| ----------------- | --------------------- | ----------------------------------- |
-| **Frontend**      | http://localhost:5173 | Dashboard principal de FlyQuest     |
-| **Backend API**   | http://localhost:4001 | API REST del servidor               |
-| **Mantenimiento** | http://localhost:8080 | Panel de administración y monitoreo |
+| Servicio          | URL                                                    | Descripción                              |
+| ----------------- | ------------------------------------------------------ | ---------------------------------------- |
+| **Dashboard**     | http://localhost:4001                                  | Aplicación completa (Frontend + Backend) |
+| **API REST**      | http://localhost:4001/api                              | Endpoints de la API                      |
+| **Mantenimiento** | http://localhost:4001/mantenimiento/mantenimiento.html | Panel de administración                  |
 
-## � Arquitectura Docker
+> 💡 **Nota**: La nueva arquitectura usa un solo contenedor que sirve todo en el puerto 4001
 
-El proyecto usa 3 contenedores:
+## 🐳 Arquitectura Docker Actualizada (2025)
+
+El proyecto ahora usa **arquitectura monolítica optimizada** (un solo contenedor):
 
 ```
 ┌─────────────────────────────────────────────────────┐
 │                  flyquest-network                    │
 │                                                      │
-│  ┌──────────────┐  ┌──────────────┐  ┌────────────┐│
-│  │   Backend    │  │  Frontend    │  │Mantenimiento││
-│  │              │  │              │  │            ││
-│  │ Node.js      │  │ React+Nginx  │  │  Nginx     ││
-│  │ Express      │  │              │  │  HTML/CSS  ││
-│  │ Port: 4001   │  │ Port: 5173   │  │  Port:8080 ││
-│  └──────────────┘  └──────────────┘  └────────────┘│
-│         │                                           │
-│  ┌──────┴─────┐                                    │
-│  │  Volumes   │                                    │
-│  │  - data    │                                    │
-│  │  - logs    │                                    │
-│  └────────────┘                                    │
+│  ┌───────────────────────────────────────────────┐  │
+│  │           flyquest-app (Container)            │  │
+│  │                                               │  │
+│  │  ┌─────────────────────────────────────────┐ │  │
+│  │  │  Node.js 22 + Express Server            │ │  │
+│  │  │  Port: 4001                             │ │  │
+│  │  │                                         │ │  │
+│  │  │  ├─ 📂 /api/*        → Backend API     │ │  │
+│  │  │  ├─ 📂 /            → Frontend (React) │ │  │
+│  │  │  └─ 📂 /mantenimiento/* → Admin Panel  │ │  │
+│  │  └─────────────────────────────────────────┘ │  │
+│  │                                               │  │
+│  │  Volúmenes:                                   │  │
+│  │  • app-data (bugs.json, datos persistentes)  │  │
+│  │  • app-logs (logs del sistema)               │  │
+│  └───────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────┘
 ```
+
+### ✅ Ventajas de esta arquitectura
+
+- **Un solo contenedor**: Más simple de gestionar y desplegar
+- **Backend sirve el frontend**: Sin CORS, sin configuración de proxy
+- **Build multi-stage optimizado**: Node.js 22 con compilación de React
+- **Persistencia de datos**: Volúmenes Docker para bugs y logs
+- **Compatible con Render**: Mismo código para Docker y cloud
 
 ### Volúmenes persistentes
 
 Los siguientes datos se almacenan en volúmenes Docker:
 
-- `backend-data`: Datos de bugs reportados
-- `backend-logs`: Logs del sistema
+- `app-data`: Datos de bugs reportados (bugs.json)
+- `app-logs`: Logs del sistema y errores
 
-## 🛠️ Comandos útiles
+## 🛠️ Comandos útiles de Docker
 
-### Gestión de contenedores
+### Con el script helper (Recomendado)
 
 ```bash
-# Detener todos los servicios
+./docker.sh up          # Iniciar contenedores
+./docker.sh down        # Detener contenedores
+./docker.sh restart     # Reiniciar contenedores
+./docker.sh logs        # Ver logs en tiempo real
+./docker.sh status      # Ver estado
+./docker.sh rebuild     # Reconstruir desde cero
+./docker.sh help        # Ver todos los comandos
+```
+
+### Gestión manual con Docker Compose
+
+```bash
+# Detener el servicio
 docker-compose down
 
-# Reiniciar un servicio específico
-docker-compose restart backend
+# Reiniciar el contenedor
+docker-compose restart app
 
-# Ver logs de un servicio específico
-docker-compose logs -f frontend
+# Ver logs en tiempo real
+docker-compose logs -f app
 
-# Acceder al shell de un contenedor
-docker exec -it flyquest-backend sh
+# Acceder al shell del contenedor
+docker exec -it flyquest-app sh
 
-# Reconstruir solo un servicio
-docker-compose build backend
-docker-compose up -d backend
+# Reconstruir y reiniciar
+docker-compose build --no-cache
+docker-compose up -d
 ```
 
 ### Limpieza

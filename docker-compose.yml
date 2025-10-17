@@ -1,22 +1,23 @@
 version: '3.8'
 
 services:
-  # Servicio Backend - API de Node.js
-  backend:
+  # Servicio Principal - Backend + Frontend integrados
+  app:
     build:
-      context: ./server
+      context: .
       dockerfile: Dockerfile
-    container_name: flyquest-backend
+    container_name: flyquest-app
     ports:
       - "4001:4001"
     environment:
       - NODE_ENV=production
+      - PORT=4001
     env_file:
       - ./server/.env
     volumes:
       # Persistir datos de bugs y logs
-      - backend-data:/app/data
-      - backend-logs:/app/logs
+      - app-data:/app/server/data
+      - app-logs:/app/logs
     restart: unless-stopped
     networks:
       - flyquest-network
@@ -27,39 +28,11 @@ services:
       retries: 3
       start_period: 40s
 
-  # Servicio Frontend - Dashboard React con Nginx
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: flyquest-frontend
-    ports:
-      - "5173:80"
-    depends_on:
-      - backend
-    restart: unless-stopped
-    networks:
-      - flyquest-network
-
-  # Servicio de Mantenimiento - Dashboard HTML con Nginx
-  mantenimiento:
-    build:
-      context: ./scripts
-      dockerfile: Dockerfile
-    container_name: flyquest-mantenimiento
-    ports:
-      - "8080:8080"
-    depends_on:
-      - backend
-    restart: unless-stopped
-    networks:
-      - flyquest-network
-
 # Volúmenes nombrados para persistencia de datos
 volumes:
-  backend-data:
+  app-data:
     driver: local
-  backend-logs:
+  app-logs:
     driver: local
 
 # Red personalizada para comunicación entre servicios
