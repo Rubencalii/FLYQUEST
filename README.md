@@ -2,26 +2,47 @@
 
 Proyecto fullstack: frontend React + TailwindCSS y backend Express que consulta la Riot/LoL Esports API.
 
-Instrucciones rápidas (con Docker):
+## 🚀 Instrucciones rápidas (con Docker):
 
-1. Crear un archivo .env con tu API key:
+1. **El proyecto ya incluye un archivo `.env` configurado**. Si necesitas cambiarlo:
 
-```
+```bash
+# Edita el archivo .env con tu configuración
 RIOT_API_KEY=tu_api_key_aqui
+ADMIN_TOKEN=tu_token_admin
 ```
 
-2. Levantar con Docker Compose:
+2. **Levantar con Docker Compose**:
 
-```
+```bash
 docker-compose up --build
 ```
 
-Frontend en http://localhost:3000
-Backend en http://localhost:4000
+3. **Acceder a la aplicación**:
+   - Frontend: http://localhost:3000
+   - Backend API: http://localhost:4000
 
-Nota: reemplaza RIOT_API_KEY en .env. Si no la pones, el servidor devolverá un placeholder.
+## 📝 Notas importantes:
 
-Comandos en PowerShell (local):
+- ⚠️ **La API de LoL Esports es pública** y no requiere API key para consultas básicas
+- 🔑 La `RIOT_API_KEY` está incluida para compatibilidad futura
+- 🛡️ El `ADMIN_TOKEN` es necesario para acceder al panel de administración
+- 🐛 Puedes reportar bugs desde el botón "Reportar fallo" en la interfaz
+
+## 🛠️ Comandos útiles:
+
+```bash
+# Detener los contenedores
+docker-compose down
+
+# Ver logs en tiempo real
+docker-compose logs -f
+
+# Reconstruir sin caché
+docker-compose build --no-cache
+```
+
+## 📦 Estructura del proyecto:
 
 ```powershell
 # Backend

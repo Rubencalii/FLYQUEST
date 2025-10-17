@@ -29,10 +29,22 @@ try {
 
 app.get('/api/flyquest/matches', async (req, res) => {
   try {
-    const url = 'https://esports-api.lolesports.com/persisted/gw/getSchedule?leagueId=98767991299243165'
-    const r = await fetch(url, { headers: { 'x-api-key': RIOT_API_KEY } })
-    if (!r.ok) return res.status(502).json({ error: 'upstream error' })
+    // La API de LoL Esports es pública, no requiere la x-api-key en headers
+    const url = 'https://esports-api.lolesports.com/persisted/gw/getSchedule?hl=es-MX&leagueId=98767991299243165'
+
+    console.log('Fetching matches from LoL Esports API...')
+    const r = await fetch(url)
+
+    if (!r.ok) {
+      console.error('Upstream API error:', r.status, r.statusText)
+      return res.status(502).json({
+        error: 'upstream error',
+        details: `API returned ${r.status}`
+      })
+    }
+
     const json = await r.json()
+    console.log('API Response received successfully')
 
     // navigate the payload safely
     const events = json.data?.schedule?.events || []
@@ -40,30 +52,36 @@ app.get('/api/flyquest/matches', async (req, res) => {
 
     for (const ev of events) {
       const competitors = ev.match?.teams || []
-      if (!competitors) continue
+      if (!competitors || competitors.length === 0) continue
 
       const hasFly = competitors.some((c) => c.name && c.name.toLowerCase().includes('flyquest'))
       if (!hasFly) continue
 
       const teams = competitors.map((c) => ({
         name: c.name,
+        code: c.code || c.name,
         logo: c.image || '',
         score: c.result?.gameWins ?? 0
       }))
 
       matches.push({
-        id: ev.id || ev.match?.id || `${ev.startTime}`,
-        status: ev.state || ev.match?.state || 'unknown',
-        startTime: ev.startTime || ev.match?.startTime,
+        id: ev.match?.id || ev.id || `${ev.startTime}`,
+        status: ev.state || 'unknown',
+        startTime: ev.startTime,
         teams,
-        format: ev.match?.format
+        format: ev.match?.strategy?.type || 'Bo1',
+        league: ev.league?.name || 'LCS'
       })
     }
 
+    console.log(`Found ${matches.length} FlyQuest matches`)
     res.json(matches)
   } catch (e) {
-    console.error(e)
-    res.status(500).json({ error: 'server error' })
+    console.error('Server error fetching matches:', e.message)
+    res.status(500).json({
+      error: 'server error',
+      details: e.message
+    })
   }
 })
 

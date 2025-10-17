@@ -60,14 +60,27 @@ export default function FlyQuestDashboard() {
   const [showBugForm, setShowBugForm] = useState(false)
   const [showAdmin, setShowAdmin] = useState(false)
   const [rosterData, setRosterData] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
 
   const fetchMatches = useCallback(async () => {
     try {
+      setLoading(true)
+      setError(null)
       const res = await fetch('/api/flyquest/matches')
+
+      if (!res.ok) {
+        throw new Error(`Error ${res.status}: ${res.statusText}`)
+      }
+
       const data = await res.json()
       setMatches(data)
+      console.log('Matches loaded:', data.length)
     } catch (e) {
-      console.error('fetch matches', e)
+      console.error('fetch matches error:', e)
+      setError(e.message || 'Error al cargar partidos')
+    } finally {
+      setLoading(false)
     }
   }, [])
 
@@ -94,7 +107,7 @@ export default function FlyQuestDashboard() {
     fetch('/rosterFlyQuest.json')
       .then((r) => r.json())
       .then((d) => setRosterData(d))
-      .catch(() => {})
+      .catch(() => { })
   }, [])
 
   useEffect(() => {
@@ -146,17 +159,46 @@ export default function FlyQuestDashboard() {
       <main className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <section className="md:col-span-2">
           <h2 className="text-xl font-semibold mb-3">{t.matches}</h2>
-          <div>
-            {matches.length === 0 && <div className="card">No matches found</div>}
-            {matches.map((m) => (
-              <div key={m.id} className="relative">
-                <MatchCard match={m} timezone={timezone === 'local' ? Intl.DateTimeFormat().resolvedOptions().timeZone : timezone} />
-                <div className="absolute right-2 top-2 flex gap-2">
-                  <button onClick={() => handleShare(m)} className="px-2 py-1 rounded-md card">Share</button>
+
+          {loading && (
+            <div className="card text-center py-8">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-flyquest-blue mx-auto mb-3"></div>
+              <p>Cargando partidos...</p>
+            </div>
+          )}
+
+          {error && (
+            <div className="card bg-red-50 border-red-200 text-red-800">
+              <p className="font-semibold">⚠️ Error al cargar partidos</p>
+              <p className="text-sm mt-2">{error}</p>
+              <button
+                onClick={fetchMatches}
+                className="mt-3 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+              >
+                Reintentar
+              </button>
+            </div>
+          )}
+
+          {!loading && !error && (
+            <div>
+              {matches.length === 0 && (
+                <div className="card">
+                  <p className="text-center py-4">
+                    📅 No hay partidos de FlyQuest programados próximamente
+                  </p>
                 </div>
-              </div>
-            ))}
-          </div>
+              )}
+              {matches.map((m) => (
+                <div key={m.id} className="relative">
+                  <MatchCard match={m} timezone={timezone === 'local' ? Intl.DateTimeFormat().resolvedOptions().timeZone : timezone} />
+                  <div className="absolute right-2 top-2 flex gap-2">
+                    <button onClick={() => handleShare(m)} className="px-2 py-1 rounded-md card">Share</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </section>
 
         <aside>
