@@ -35,6 +35,7 @@ export default function StatsBoard({ matches, lang = 'es', dark = false }) {
   // Calcular datos para los gráficos
   const chartsData = useMemo(() => {
     if (!matches || matches.length === 0) {
+      console.log('⚠️ StatsBoard: No hay partidos disponibles')
       return null
     }
 
@@ -42,8 +43,11 @@ export default function StatsBoard({ matches, lang = 'es', dark = false }) {
     const completedMatches = matches.filter(m => m.status === 'completed')
     
     if (completedMatches.length === 0) {
+      console.log('⚠️ StatsBoard: No hay partidos completados')
       return null
     }
+
+    console.log('✅ StatsBoard: Procesando', completedMatches.length, 'partidos completados')
 
     // Ordenar por fecha (más antiguo primero para gráfico de evolución)
     const sortedMatches = [...completedMatches].sort((a, b) => 
@@ -202,14 +206,21 @@ export default function StatsBoard({ matches, lang = 'es', dark = false }) {
   const commonOptions = {
     responsive: true,
     maintainAspectRatio: false,
+    interaction: {
+      mode: 'index',
+      intersect: false,
+    },
     plugins: {
       legend: {
         labels: {
           color: colors.text,
-          font: { size: 12, weight: 'bold' }
+          font: { size: 12, weight: 'bold' },
+          padding: 10,
+          usePointStyle: true
         }
       },
       tooltip: {
+        enabled: true,
         backgroundColor: dark ? 'rgba(10, 14, 26, 0.95)' : 'rgba(255, 255, 255, 0.95)',
         titleColor: colors.text,
         bodyColor: colors.text,
@@ -236,12 +247,28 @@ export default function StatsBoard({ matches, lang = 'es', dark = false }) {
     },
     scales: {
       x: {
-        ticks: { color: colors.text, font: { size: 10 } },
-        grid: { color: colors.grid, drawBorder: false }
+        ticks: { 
+          color: colors.text, 
+          font: { size: 10 },
+          maxRotation: 45,
+          minRotation: 0
+        },
+        grid: { 
+          color: colors.grid, 
+          drawBorder: false,
+          display: true
+        }
       },
       y: {
-        ticks: { color: colors.text, font: { size: 10 } },
-        grid: { color: colors.grid, drawBorder: false }
+        ticks: { 
+          color: colors.text, 
+          font: { size: 10 }
+        },
+        grid: { 
+          color: colors.grid, 
+          drawBorder: false,
+          display: true
+        }
       }
     }
   }

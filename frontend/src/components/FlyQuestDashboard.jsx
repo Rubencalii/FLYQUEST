@@ -6,8 +6,9 @@ import BugReport from './BugReport'
 import AdminDashboard from './AdminDashboard'
 import FlyQuestStats from './FlyQuestStats'
 import StatsBoard from './StatsBoard'
+import TwitterFeed from './TwitterFeed'
 
-function MatchCard({ match, timezone, showDate = false }) {
+function MatchCard({ match, timezone, showDate = false, isFavorite = false, onToggleFavorite }) {
   const [hovered, setHovered] = useState(false)
   const [imageErrors, setImageErrors] = useState({})
 
@@ -149,13 +150,46 @@ function MatchCard({ match, timezone, showDate = false }) {
                 </React.Fragment>
               ))}
             </div>
-            <div className="text-right ml-6">
+            <div className="flex flex-col items-end gap-2 ml-6">
               <div className="text-sm font-medium text-gray-600 dark:text-flyquest-gray">{startLocal}</div>
               {match.league && (
-                <div className="text-xs font-semibold text-flyquest-green dark:text-flyquest-neon/80 mt-1 px-2 py-0.5 bg-flyquest-green/10 dark:bg-flyquest-neon/10 rounded inline-block">
+                <div className="text-xs font-semibold text-flyquest-green dark:text-flyquest-neon/80 px-2 py-0.5 bg-flyquest-green/10 dark:bg-flyquest-neon/10 rounded inline-block">
                   {match.league}
                 </div>
               )}
+              
+              {/* Botones de acción rápida */}
+              <div className="flex gap-2">
+                {/* Botón de Google Calendar para partidos futuros */}
+                {(match.status === 'unstarted' || match.status === 'upcoming') && (
+                  <a
+                    href={generateGoogleCalendarLink()}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="p-2 rounded-lg bg-green-500/20 hover:bg-green-500/30 text-green-600 dark:text-green-400 transition-all duration-300 hover:scale-110"
+                    title="Añadir a Google Calendar"
+                  >
+                    <span className="text-xl">📅</span>
+                  </a>
+                )}
+                
+                {/* Botón de favorito */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onToggleFavorite && onToggleFavorite(match.id)
+                  }}
+                  className={`p-2 rounded-lg transition-all duration-300 hover:scale-110 ${
+                    isFavorite 
+                      ? 'bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-500' 
+                      : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-400 dark:text-gray-500 hover:text-yellow-500'
+                  }`}
+                  title={isFavorite ? 'Quitar de favoritos' : 'Añadir a favoritos'}
+                >
+                  <span className="text-xl">{isFavorite ? '⭐' : '☆'}</span>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -248,6 +282,42 @@ export default function FlyQuestDashboard() {
   const [dateFilter, setDateFilter] = useState('all') // 'all', 'week', 'month'
   const [leagueFilter, setLeagueFilter] = useState('all') // 'all', 'lcs', 'worlds', 'msi', 'firststand'
   const [headerLogoError, setHeaderLogoError] = useState(false)
+  const [favorites, setFavorites] = useState([]) // IDs de partidos favoritos
+  const [showOnlyFavorites, setShowOnlyFavorites] = useState(false) // Filtro de favoritos
+
+  // Cargar favoritos desde localStorage al iniciar
+  useEffect(() => {
+    const savedFavorites = localStorage.getItem('flyquest_favorites')
+    if (savedFavorites) {
+      try {
+        setFavorites(JSON.parse(savedFavorites))
+      } catch (e) {
+        console.error('Error al cargar favoritos:', e)
+        setFavorites([])
+      }
+    }
+  }, [])
+
+  // Guardar favoritos en localStorage cuando cambien
+  useEffect(() => {
+    localStorage.setItem('flyquest_favorites', JSON.stringify(favorites))
+  }, [favorites])
+
+  // Función para alternar favorito
+  const toggleFavorite = useCallback((matchId) => {
+    setFavorites(prev => {
+      if (prev.includes(matchId)) {
+        return prev.filter(id => id !== matchId)
+      } else {
+        return [...prev, matchId]
+      }
+    })
+  }, [])
+
+  // Verificar si un partido es favorito
+  const isFavorite = useCallback((matchId) => {
+    return favorites.includes(matchId)
+  }, [favorites])
 
   const fetchMatches = useCallback(async () => {
     try {
@@ -403,6 +473,11 @@ export default function FlyQuestDashboard() {
             return true
         }
       })
+    }
+
+    // Filtrar por favoritos
+    if (showOnlyFavorites) {
+      filtered = filtered.filter(m => favorites.includes(m.id))
     }
 
     // Ordenar por fecha: más recientes primero (descendente)
@@ -620,6 +695,31 @@ export default function FlyQuestDashboard() {
                 </button>
               </div>
             </div>
+
+            {/* Filtro de favoritos */}
+            <div className="mt-4 pt-4 border-t border-flyquest-green/20 dark:border-flyquest-neon/20">
+              <h3 className="text-sm font-bold text-flyquest-green dark:text-flyquest-neon mb-3 uppercase tracking-wider">
+                ⭐ Favoritos
+              </h3>
+              <div className="flex gap-2 items-center">
+                <button
+                  onClick={() => setShowOnlyFavorites(!showOnlyFavorites)}
+                  className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-300 flex items-center gap-2 ${
+                    showOnlyFavorites
+                      ? 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white shadow-lg scale-105'
+                      : 'bg-gray-100 dark:bg-flyquest-dark/30 text-gray-700 dark:text-flyquest-white hover:bg-gray-200 dark:hover:bg-flyquest-dark/50'
+                  }`}
+                >
+                  <span className="text-lg">{showOnlyFavorites ? '⭐' : '☆'}</span>
+                  <span>{showOnlyFavorites ? 'Mostrando favoritos' : 'Mostrar solo favoritos'}</span>
+                </button>
+                {favorites.length > 0 && (
+                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                    {favorites.length} {favorites.length === 1 ? 'partido' : 'partidos'}
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
 
           {/* Estadísticas de FlyQuest */}
@@ -629,6 +729,9 @@ export default function FlyQuestDashboard() {
               
               {/* Dashboard de Gráficos Avanzados */}
               <StatsBoard matches={matches} lang={lang} dark={dark} />
+              
+              {/* Feed de Twitter */}
+              <TwitterFeed lang={lang} dark={dark} />
             </div>
           )}
 
@@ -691,6 +794,8 @@ export default function FlyQuestDashboard() {
                       match={m}
                       timezone={timezone === 'local' ? Intl.DateTimeFormat().resolvedOptions().timeZone : timezone}
                       showDate={showDate}
+                      isFavorite={isFavorite(m.id)}
+                      onToggleFavorite={toggleFavorite}
                     />
                     <div className="absolute right-4 top-4 z-20 flex gap-2">
                       <button
