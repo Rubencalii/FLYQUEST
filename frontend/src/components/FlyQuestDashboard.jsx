@@ -134,7 +134,7 @@ function MatchCard({ match, timezone, showDate = false }) {
 
           {hovered && (
             <div className="mt-4 pt-4 border-t border-flyquest-green/20 dark:border-flyquest-neon/20 animate-fade-in">
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between items-center text-sm flex-wrap gap-2">
                 <div className="flex items-center gap-2">
                   <span className="text-gray-600 dark:text-flyquest-gray">Formato:</span>
                   <span className="font-bold text-flyquest-green dark:text-flyquest-neon">{match.format || 'BO1'}</span>
@@ -143,6 +143,50 @@ function MatchCard({ match, timezone, showDate = false }) {
                   <span className="text-gray-600 dark:text-flyquest-gray">UTC:</span>
                   <span className="font-mono text-gray-800 dark:text-flyquest-white">{new Date(match.startTime).toUTCString().slice(17, 22)}</span>
                 </div>
+              </div>
+              
+              {/* Links de partido/VOD */}
+              <div className="mt-3 flex gap-2 flex-wrap">
+                {match.status === 'inProgress' && (
+                  <a
+                    href="https://lolesports.com/live/lcs"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold text-sm transition-all hover:scale-105 shadow-lg animate-pulse"
+                  >
+                    🔴 Ver EN VIVO
+                  </a>
+                )}
+                {match.status === 'completed' && (
+                  <>
+                    <a
+                      href={`https://www.youtube.com/@lolesports/videos`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold text-sm transition-all hover:scale-105 shadow-lg"
+                    >
+                      ▶️ Ver VOD (YouTube)
+                    </a>
+                    <a
+                      href={`https://www.twitch.tv/lcs/videos`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold text-sm transition-all hover:scale-105 shadow-lg"
+                    >
+                      🎮 Ver VOD (Twitch)
+                    </a>
+                  </>
+                )}
+                {(match.status === 'unstarted' || match.status === 'upcoming') && (
+                  <a
+                    href="https://lolesports.com/schedule"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold text-sm transition-all hover:scale-105 shadow-lg"
+                  >
+                    📅 Ver en Calendario
+                  </a>
+                )}
               </div>
             </div>
           )}
