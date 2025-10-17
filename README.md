@@ -1,5 +1,10 @@
 # FlyQuest Dashboard - Live Edition 2025 🏆🔴
 
+[![Deploy Status](https://img.shields.io/badge/Deploy-Live-brightgreen)](https://flyquest-3.onrender.com/)
+[![API Status](https://img.shields.io/badge/API-Active-success)](https://flyquest-3.onrender.com/api/flyquest/matches)
+
+**🌐 LIVE:** [https://flyquest-3.onrender.com/](https://flyquest-3.onrender.com/)
+
 Proyecto fullstack: frontend React + TailwindCSS y backend Express que muestra información **100% ACTUALIZADA** de **FlyQuest** en todas las competiciones usando **LoL Esports Official API** (Riot Games).
 
 ## 🌟 Características principales
