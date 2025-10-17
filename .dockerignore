@@ -6,36 +6,49 @@ server/node_modules/
 # Build outputs
 frontend/dist/
 frontend/.vite/
+.vite/
 
 # Logs
 logs/
 *.log
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # Environment files (se copiarán manualmente o con docker-compose)
 .env
 .env.local
 .env.production
+.env.test
 
 # Git
 .git/
 .gitignore
+.gitattributes
 
 # IDE
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
 
 # OS
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# Documentation
+# Documentation (excepto las nuevas guías importantes)
 *.md
 !README.md
+!CHARTJS_GUIDE.md
+!NUEVAS_FUNCIONALIDADES.md
 
 # Tests
 *.test.js
+*.spec.js
 __tests__/
+coverage/
 
 # Scripts de deployment
 deploy.sh
@@ -45,10 +58,23 @@ stop.sh
 check.sh
 logs.sh
 status.sh
+docker.sh
 
 # Docker
 Dockerfile.old
 docker-compose.old.yml
+.dockerignore.old
 
 # Data files (se montan con volúmenes)
 server/data/
+data/
+
+# Cache
+.cache/
+.npm/
+.eslintcache
+
+# Temp files
+tmp/
+temp/
+*.tmp

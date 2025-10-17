@@ -6,13 +6,19 @@ WORKDIR /app/frontend
 # Copiar archivos de dependencias del frontend
 COPY frontend/package.json frontend/package-lock.json* ./
 
-# Instalar dependencias del frontend
+# Instalar dependencias del frontend (incluye chart.js y react-chartjs-2)
 RUN npm ci
 
-# Copiar código fuente del frontend
-COPY frontend/ ./
+# Copiar archivos de configuración
+COPY frontend/vite.config.js frontend/tailwind.config.js frontend/postcss.config.js ./
+COPY frontend/index.html ./
+
+# Copiar código fuente del frontend (incluye nuevos componentes)
+COPY frontend/src ./src
+COPY frontend/public ./public
 
 # Construir la aplicación React para producción
+# Incluye: Achievements, AdvancedAlerts, PlayerStats, Chart.js optimizaciones
 RUN npm run build
 
 # Etapa 2: Setup del Backend con Frontend compilado
@@ -39,12 +45,19 @@ COPY --from=frontend-build /app/frontend/dist /app/frontend/dist
 # Copiar los scripts de mantenimiento
 COPY scripts/ /app/scripts/
 
+# Copiar documentación importante
+COPY CHARTJS_GUIDE.md NUEVAS_FUNCIONALIDADES.md /app/docs/
+
 # Exponer puerto del servidor
 EXPOSE 4001
 
 # Variables de entorno por defecto
 ENV NODE_ENV=production
 ENV PORT=4001
+
+# Healthcheck para monitoreo
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:4001/api/mantenimiento/estado', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
 
 # Comando para iniciar el servidor (que también sirve el frontend)
 CMD ["node", "index.js"]

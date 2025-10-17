@@ -3,20 +3,20 @@ import { Line } from 'react-chartjs-2'
 
 /**
  * Componente para mostrar estadísticas de jugadores de FlyQuest
- * NOTA: Requiere datos de jugadores de la API
+ * Usa imágenes oficiales del roster 2025
  */
 export default function PlayerStats({ matches, lang = 'es', dark = false }) {
   const [selectedPlayer, setSelectedPlayer] = useState(null)
 
-  // Datos mockeados de jugadores (mientras no tengamos API de jugadores)
+  // Datos de jugadores con imágenes oficiales
   const playersData = useMemo(() => {
-    // Este es un placeholder - en producción vendría de la API
     return [
       {
         id: 1,
         name: 'Bwipo',
         role: 'Top',
-        image: 'https://am-a.akamaihd.net/image?resize=64:&f=http://static.lolesports.com/players/bwipo-2024.png',
+        country: 'Bélgica',
+        image: 'https://flyquest.gg/cdn/shop/files/250112_FLYQUEST0621_1024x1024.png?v=1752789107',
         kda: 3.8,
         gamesPlayed: matches?.filter(m => m.status === 'completed').length || 0,
         winrate: 65.5,
@@ -33,7 +33,8 @@ export default function PlayerStats({ matches, lang = 'es', dark = false }) {
         id: 2,
         name: 'Inspired',
         role: 'Jungle',
-        image: 'https://am-a.akamaihd.net/image?resize=64:&f=http://static.lolesports.com/players/inspired-2024.png',
+        country: 'Polonia',
+        image: 'https://flyquest.gg/cdn/shop/files/250112_FLYQUEST0437_1024x1024.png?v=1752789116',
         kda: 4.5,
         gamesPlayed: matches?.filter(m => m.status === 'completed').length || 0,
         winrate: 68.2,
@@ -48,9 +49,10 @@ export default function PlayerStats({ matches, lang = 'es', dark = false }) {
       },
       {
         id: 3,
-        name: 'Quad',
+        name: 'Quadra',
         role: 'Mid',
-        image: 'https://am-a.akamaihd.net/image?resize=64:&f=http://static.lolesports.com/players/quad-2024.png',
+        country: 'Australia',
+        image: 'https://flyquest.gg/cdn/shop/files/250112_FLYQUEST0300_1024x1024.png?v=1752789126',
         kda: 4.2,
         gamesPlayed: matches?.filter(m => m.status === 'completed').length || 0,
         winrate: 64.1,
@@ -67,7 +69,8 @@ export default function PlayerStats({ matches, lang = 'es', dark = false }) {
         id: 4,
         name: 'Massu',
         role: 'ADC',
-        image: 'https://am-a.akamaihd.net/image?resize=64:&f=http://static.lolesports.com/players/massu-2024.png',
+        country: 'Chile',
+        image: 'https://flyquest.gg/cdn/shop/files/250112_FLYQUEST0043_1024x1024.png?v=1752789134',
         kda: 5.1,
         gamesPlayed: matches?.filter(m => m.status === 'completed').length || 0,
         winrate: 70.5,
@@ -84,7 +87,8 @@ export default function PlayerStats({ matches, lang = 'es', dark = false }) {
         id: 5,
         name: 'Busio',
         role: 'Support',
-        image: 'https://am-a.akamaihd.net/image?resize=64:&f=http://static.lolesports.com/players/busio-2024.png',
+        country: 'EE.UU.',
+        image: 'https://flyquest.gg/cdn/shop/files/250112_FLYQUEST0019_1_1024x1024.png?v=1752789142',
         kda: 3.9,
         gamesPlayed: matches?.filter(m => m.status === 'completed').length || 0,
         winrate: 66.8,

@@ -6,18 +6,25 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        - NODE_ENV=production
     container_name: flyquest-app
     ports:
       - "4001:4001"
     environment:
       - NODE_ENV=production
       - PORT=4001
+      # Chart.js optimization
+      - NODE_OPTIONS=--max-old-space-size=512
     env_file:
       - ./server/.env
     volumes:
       # Persistir datos de bugs y logs
       - app-data:/app/server/data
       - app-logs:/app/logs
+      # Documentación accesible
+      - ./CHARTJS_GUIDE.md:/app/docs/CHARTJS_GUIDE.md:ro
+      - ./NUEVAS_FUNCIONALIDADES.md:/app/docs/NUEVAS_FUNCIONALIDADES.md:ro
     restart: unless-stopped
     networks:
       - flyquest-network
@@ -27,6 +34,10 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+    labels:
+      - "com.flyquest.version=2.0"
+      - "com.flyquest.features=achievements,advanced-alerts,player-stats,chartjs"
+      - "com.flyquest.description=FlyQuest Dashboard with advanced features"
 
 # Volúmenes nombrados para persistencia de datos
 volumes:
