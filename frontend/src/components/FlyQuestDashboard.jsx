@@ -160,7 +160,7 @@ function MatchCard({ match, timezone, showDate = false, isFavorite = false, onTo
               )}
               
               {/* Botones de acción rápida */}
-              <div className="flex gap-2">
+              <div className="flex gap-2 mt-2">
                 {/* Botón de Google Calendar para partidos futuros */}
                 {(match.status === 'unstarted' || match.status === 'upcoming') && (
                   <a
@@ -168,10 +168,14 @@ function MatchCard({ match, timezone, showDate = false, isFavorite = false, onTo
                     target="_blank"
                     rel="noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="p-2 rounded-lg bg-green-500/20 hover:bg-green-500/30 text-green-600 dark:text-green-400 transition-all duration-300 hover:scale-110"
+                    className="group relative p-2.5 rounded-xl bg-gradient-to-br from-green-500/20 to-emerald-500/20 hover:from-green-500/30 hover:to-emerald-500/30 border border-green-500/30 hover:border-green-500/50 text-green-600 dark:text-green-400 transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-green-500/20"
                     title="Añadir a Google Calendar"
                   >
-                    <span className="text-xl">📅</span>
+                    <span className="text-lg">📅</span>
+                    {/* Tooltip */}
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 dark:bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                      Google Calendar
+                    </div>
                   </a>
                 )}
                 
@@ -181,14 +185,18 @@ function MatchCard({ match, timezone, showDate = false, isFavorite = false, onTo
                     e.stopPropagation()
                     onToggleFavorite && onToggleFavorite(match.id)
                   }}
-                  className={`p-2 rounded-lg transition-all duration-300 hover:scale-110 ${
+                  className={`group relative p-2.5 rounded-xl border transition-all duration-300 hover:scale-110 hover:shadow-lg ${
                     isFavorite 
-                      ? 'bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-500' 
-                      : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-400 dark:text-gray-500 hover:text-yellow-500'
+                      ? 'bg-gradient-to-br from-yellow-500/20 to-amber-500/20 hover:from-yellow-500/30 hover:to-amber-500/30 border-yellow-500/30 hover:border-yellow-500/50 text-yellow-500 hover:shadow-yellow-500/20' 
+                      : 'bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 hover:from-gray-200 hover:to-gray-300 dark:hover:from-gray-700 dark:hover:to-gray-800 border-gray-300 dark:border-gray-700 text-gray-400 dark:text-gray-500 hover:text-yellow-500 dark:hover:text-yellow-400'
                   }`}
                   title={isFavorite ? 'Quitar de favoritos' : 'Añadir a favoritos'}
                 >
-                  <span className="text-xl">{isFavorite ? '⭐' : '☆'}</span>
+                  <span className="text-lg">{isFavorite ? '⭐' : '☆'}</span>
+                  {/* Tooltip */}
+                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 dark:bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                    {isFavorite ? 'Quitar favorito' : 'Añadir favorito'}
+                  </div>
                 </button>
               </div>
             </div>
@@ -724,7 +732,7 @@ export default function FlyQuestDashboard() {
 
             {/* Notificaciones Push */}
             <div className="mt-4 pt-4 border-t border-flyquest-green/20 dark:border-flyquest-neon/20">
-              <NotificationManager matches={matches} lang={lang} />
+              <NotificationManager matches={matches} favorites={favorites} lang={lang} />
             </div>
           </div>
 

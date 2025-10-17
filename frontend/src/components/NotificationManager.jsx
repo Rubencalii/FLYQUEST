@@ -86,28 +86,32 @@ export const useNotifications = () => {
 }
 
 // Componente UI para gestionar notificaciones
-export default function NotificationManager({ matches = [], lang = 'es' }) {
+export default function NotificationManager({ matches = [], favorites = [], lang = 'es' }) {
   const { permission, isSupported, requestPermission, sendNotification, isGranted } = useNotifications()
   const [scheduledNotifications, setScheduledNotifications] = useState(new Set())
   const [showSettings, setShowSettings] = useState(false)
   const [notifyBefore, setNotifyBefore] = useState(15) // minutos antes
   const [notifyResults, setNotifyResults] = useState(true)
+  const [onlyFavorites, setOnlyFavorites] = useState(false) // Solo notificar favoritos
   const [message, setMessage] = useState(null)
 
   // Cargar preferencias desde localStorage
   useEffect(() => {
     const savedBefore = localStorage.getItem('flyquest_notify_before')
     const savedResults = localStorage.getItem('flyquest_notify_results')
+    const savedOnlyFavorites = localStorage.getItem('flyquest_notify_only_favorites')
     
     if (savedBefore) setNotifyBefore(parseInt(savedBefore))
     if (savedResults !== null) setNotifyResults(savedResults === 'true')
+    if (savedOnlyFavorites !== null) setOnlyFavorites(savedOnlyFavorites === 'true')
   }, [])
 
   // Guardar preferencias en localStorage
   useEffect(() => {
     localStorage.setItem('flyquest_notify_before', notifyBefore.toString())
     localStorage.setItem('flyquest_notify_results', notifyResults.toString())
-  }, [notifyBefore, notifyResults])
+    localStorage.setItem('flyquest_notify_only_favorites', onlyFavorites.toString())
+  }, [notifyBefore, notifyResults, onlyFavorites])
 
   // Programar notificaciones para partidos próximos
   useEffect(() => {
@@ -116,7 +120,8 @@ export default function NotificationManager({ matches = [], lang = 'es' }) {
     const now = new Date()
     const upcomingMatches = matches.filter(m => 
       (m.status === 'unstarted' || m.status === 'upcoming') && 
-      new Date(m.startTime) > now
+      new Date(m.startTime) > now &&
+      (!onlyFavorites || favorites.includes(m.id)) // Solo notificar favoritos si está activado
     )
 
     upcomingMatches.forEach(match => {
@@ -147,7 +152,7 @@ export default function NotificationManager({ matches = [], lang = 'es' }) {
       // Limpiar timeout cuando se desmonte
       return () => clearTimeout(timeoutId)
     })
-  }, [matches, isGranted, notifyBefore, sendNotification, scheduledNotifications])
+  }, [matches, isGranted, notifyBefore, sendNotification, scheduledNotifications, onlyFavorites, favorites])
 
   const handleEnableNotifications = async () => {
     const result = await requestPermission()
@@ -282,6 +287,23 @@ export default function NotificationManager({ matches = [], lang = 'es' }) {
             >
               <div className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${
                 notifyResults ? 'transform translate-x-6' : ''
+              }`} />
+            </button>
+          </div>
+
+          {/* Solo notificar favoritos */}
+          <div className="flex items-center justify-between">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              {t.onlyFavorites || (lang === 'es' ? '⭐ Solo favoritos' : '⭐ Favorites only')}
+            </label>
+            <button
+              onClick={() => setOnlyFavorites(!onlyFavorites)}
+              className={`relative w-12 h-6 rounded-full transition-colors ${
+                onlyFavorites ? 'bg-yellow-500 dark:bg-yellow-400' : 'bg-gray-300 dark:bg-gray-600'
+              }`}
+            >
+              <div className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${
+                onlyFavorites ? 'transform translate-x-6' : ''
               }`} />
             </button>
           </div>
