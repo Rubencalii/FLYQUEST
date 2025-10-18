@@ -1,0 +1,170 @@
+/*
+  flyquest-landing.css
+  Estilos personalizados para el landing de FlyQuest
+  Paleta: #00EBAA (verde), #FFD600 (amarillo), #18181B (fondo oscuro), #FFFFFF (texto)
+*/
+
+body {
+  background: #18181B;
+  color: #fff;
+  font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+  min-height: 100vh;
+}
+
+.flyquest-header {
+  text-align: center;
+  padding: 2rem 0 1rem 0;
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #00EBAA;
+  text-shadow: 0 2px 16px #00ebaa44;
+  animation: flyq-fadein 1.2s cubic-bezier(.4,0,.2,1);
+}
+
+.flyquest-section {
+  background: #23232b;
+  border-radius: 1.5rem;
+  margin: 1.5rem auto;
+  padding: 2rem 1.5rem;
+  max-width: 480px;
+  box-shadow: 0 4px 32px #00ebaa22;
+  animation: flyq-slideup 1.1s cubic-bezier(.4,0,.2,1);
+}
+
+.flyquest-badge {
+  display: inline-block;
+  background: #FFD600;
+  color: #18181B;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 0.3em 1.2em;
+  font-size: 1rem;
+  margin-bottom: 1.2em;
+  letter-spacing: 1px;
+  box-shadow: 0 2px 8px #ffd60033;
+  animation: flyq-bounce 1.2s;
+}
+
+.flyquest-roster {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.flyquest-player-card {
+  background: #18181B;
+  border: 2px solid #00EBAA;
+  border-radius: 1.2rem;
+  padding: 1.2rem 1rem;
+  box-shadow: 0 2px 16px #00ebaa33;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+  animation: flyq-fadein 0.8s cubic-bezier(.4,0,.2,1);
+}
+.flyquest-player-card:hover {
+  transform: scale(1.03) translateY(-2px);
+  box-shadow: 0 6px 32px #00ebaa55;
+}
+
+.flyquest-player-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 2.5px solid #FFD600;
+  object-fit: cover;
+  background: #23232b;
+  box-shadow: 0 2px 8px #ffd60033;
+}
+
+.flyquest-player-info {
+  flex: 1;
+}
+
+.flyquest-player-name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #FFD600;
+  letter-spacing: 1px;
+}
+
+.flyquest-player-role {
+  font-size: 1rem;
+  color: #00EBAA;
+  font-weight: 500;
+  margin-bottom: 0.2em;
+}
+
+.flyquest-player-stats {
+  font-size: 0.98rem;
+  color: #fff;
+  margin-top: 0.2em;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7em 1.2em;
+}
+
+.flyquest-calendar-btn {
+  background: linear-gradient(90deg, #FFD600 60%, #00EBAA 100%);
+  color: #18181B;
+  font-weight: 700;
+  border: none;
+  border-radius: 999px;
+  padding: 0.6em 1.5em;
+  font-size: 1.1rem;
+  margin: 1.2em auto 0 auto;
+  display: block;
+  box-shadow: 0 2px 8px #ffd60033;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  animation: flyq-bounce 1.1s;
+}
+.flyquest-calendar-btn:hover {
+  background: linear-gradient(90deg, #00EBAA 60%, #FFD600 100%);
+  box-shadow: 0 4px 24px #00ebaa55;
+}
+
+.flyquest-footer {
+  text-align: center;
+  color: #FFD600;
+  font-size: 1rem;
+  margin: 2.5rem 0 0 0;
+  opacity: 0.7;
+  letter-spacing: 1px;
+}
+
+/* Animaciones */
+@keyframes flyq-fadein {
+  from { opacity: 0; transform: translateY(32px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes flyq-slideup {
+  from { opacity: 0; transform: translateY(64px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes flyq-bounce {
+  0% { transform: scale(0.9); }
+  60% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .flyquest-section {
+    padding: 1.2rem 0.5rem;
+    max-width: 98vw;
+  }
+  .flyquest-player-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.7rem;
+    padding: 1rem 0.5rem;
+  }
+  .flyquest-player-avatar {
+    width: 48px;
+    height: 48px;
+  }
+}
