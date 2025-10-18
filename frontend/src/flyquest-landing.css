@@ -108,21 +108,27 @@ body {
   animation: fadeInUp 1.1s;
 }
 .dashboard-matches-header {
-  display: flex;
-  flex-direction: column;
-  gap: 1.2rem;
-  margin-bottom: 1.5rem;
-}
-.dashboard-match-filters, .dashboard-competition-filters {
-  display: flex;
-  gap: 1rem;
-}
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100vw;
+  background: linear-gradient(90deg, var(--flyquest-card) 80%, var(--flyquest-green) 100%);
+  border-top: 3px solid var(--flyquest-green);
+  box-shadow: 0 -4px 32px #00ebaa55;
+  padding: 1.2rem 2rem 1.5rem 2rem;
+  text-align: center;
+  color: var(--flyquest-green);
+  font-size: 1.1rem;
+  z-index: 100;
+  animation: fadeInUp 1.1s;
 .dashboard-matches-list {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 .dashboard-match-card {
+  flex-wrap: wrap;
+  align-items: center;
   background: var(--flyquest-dark);
   border-radius: 1.2rem;
   box-shadow: 0 2px 16px #00ebaa33;
@@ -130,6 +136,9 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.7rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
   animation: fadeInCard 0.8s;
   position: relative;
 }
@@ -139,12 +148,26 @@ body {
   font-weight: 700;
   margin-bottom: 0.2rem;
 }
+  letter-spacing: 1px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
 .dashboard-match-teams {
   display: flex;
   align-items: center;
   gap: 1.2rem;
   font-size: 1.1rem;
+  margin-left: 0.2rem;
   font-weight: 700;
+@media (max-width: 900px) {
+  .dashboard-footer {
+    position: static;
+    border-radius: 0;
+    padding: 1rem 0.5rem 1.2rem 0.5rem;
+    font-size: 1rem;
+  }
+}
   color: var(--flyquest-white);
 }
 .dashboard-team-name {
@@ -331,4 +354,5 @@ body {
     height: 44px;
     width: 44px;
   }
+}
 }

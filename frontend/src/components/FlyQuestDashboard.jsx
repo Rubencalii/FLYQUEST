@@ -10,19 +10,22 @@ export default function FlyQuestDashboard() {
   useEffect(() => {
     fetch('/api/flyquest/alerts')
       .then(res => res.json())
-      .then(data => setAlerts(data))
+      .then(data => setAlerts(data.alerts || []))
       .catch(() => setAlerts([]));
     fetch('/api/flyquest/roster')
       .then(res => res.json())
-      .then(data => setRoster(data))
+      .then(data => setRoster(data.roster || []))
       .catch(() => setRoster([]));
     fetch('/api/flyquest/player-stats')
       .then(res => res.json())
-      .then(data => setStats(data))
+      .then(data => setStats({
+        winrate: data.winrate || null,
+        achievements: data.achievements || []
+      }))
       .catch(() => setStats({ winrate: null, achievements: [] }));
     fetch('/api/flyquest/matches')
       .then(res => res.json())
-      .then(data => setMatches(data))
+      .then(data => setMatches(data.matches || []))
       .catch(() => setMatches([]));
   }, []);
 
@@ -65,17 +68,16 @@ export default function FlyQuestDashboard() {
           <div className="dashboard-matches-list">
             {matches.length > 0 ? matches.map((match, i) => (
               <div key={i} className={`dashboard-match-card dashboard-match-status-${match.status}`}>
-                <div className="dashboard-match-date">{match.date}</div>
+                <div className="dashboard-match-date">{new Date(match.startTime).toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' })}</div>
                 <div className="dashboard-match-teams">
-                  <span className="dashboard-team-name">{match.team1}</span>
-                  <span className="dashboard-team-score">{match.score1}</span>
+                  <span className="dashboard-team-name">{match.teams[0]?.name}</span>
+                  <span className="dashboard-team-score">{match.teams[0]?.score}</span>
                   <span className="dashboard-vs">VS</span>
-                  <span className="dashboard-team-name">{match.team2}</span>
-                  <span className="dashboard-team-score">{match.score2}</span>
+                  <span className="dashboard-team-name">{match.teams[1]?.name}</span>
+                  <span className="dashboard-team-score">{match.teams[1]?.score}</span>
                 </div>
                 <div className="dashboard-match-actions">
                   <span className={`dashboard-match-status dashboard-match-status-${match.status}`}>{match.status}</span>
-                  <span className="dashboard-match-time">{match.time}</span>
                   <span className="dashboard-match-league">{match.league}</span>
                   {/* Botón Google Calendar solo si el partido es futuro */}
                   {['unstarted', 'upcoming'].includes(match.status) && match.calendarUrl && (
@@ -103,7 +105,7 @@ export default function FlyQuestDashboard() {
           <div className="dashboard-roster-list">
             {roster.length > 0 ? roster.map((player, i) => (
               <div key={i} className="dashboard-roster-card">
-                <img src={player.photo} alt={player.name} className="dashboard-roster-photo" />
+                <img src={player.image} alt={player.name} className="dashboard-roster-photo" />
                 <div className="dashboard-roster-info">
                   <div className="dashboard-roster-name">{player.name}</div>
                   <div className="dashboard-roster-role">{player.role} &mdash; {player.country}</div>
@@ -144,15 +146,15 @@ export default function FlyQuestDashboard() {
           </div>
         </section>
       </div>
-      {/* Footer */}
+      {/* Footer siempre visible y mejorado */}
       <footer className="dashboard-footer">
         <div className="dashboard-socials">
-          <a href="https://twitter.com/FlyQuest" target="_blank" rel="noopener noreferrer">Twitter</a>
-          <a href="https://instagram.com/flyquest" target="_blank" rel="noopener noreferrer">Instagram</a>
-          <a href="https://youtube.com/flyquest" target="_blank" rel="noopener noreferrer">YouTube</a>
-          <a href="https://twitch.tv/flyquest" target="_blank" rel="noopener noreferrer">Twitch</a>
+          <a href="https://twitter.com/FlyQuest" target="_blank" rel="noopener noreferrer"><span>🐦</span>Twitter</a>
+          <a href="https://instagram.com/flyquest" target="_blank" rel="noopener noreferrer"><span>📸</span>Instagram</a>
+          <a href="https://youtube.com/flyquest" target="_blank" rel="noopener noreferrer"><span>▶️</span>YouTube</a>
+          <a href="https://twitch.tv/flyquest" target="_blank" rel="noopener noreferrer"><span>🎮</span>Twitch</a>
         </div>
-        <div className="dashboard-footer-community">Hecho con <span className="dashboard-heart">♥</span> por la comunidad</div>
+        <div className="dashboard-footer-community">Hecho con <span className="dashboard-heart">♥</span> por la comunidad FlyQuest</div>
       </footer>
     </div>
   );
