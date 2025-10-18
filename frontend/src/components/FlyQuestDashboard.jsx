@@ -551,52 +551,47 @@ export default function FlyQuestDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-flyquest-green to-flyquest-neon text-white">
-      {/* Encabezado superior */}
-      <header className="flex items-center justify-between px-8 py-6 border-b border-flyquest-neon/30">
-        <div className="flex items-center gap-4">
-          <img src="/public/logo.png" alt="FlyQuest" className="h-10 w-10" />
-          <span className="text-2xl font-extrabold text-flyquest-neon tracking-wide">FlyQuest Dashboard</span>
-        </div>
-        <nav className="flex gap-6">
-          <a href="#calendario" className="font-bold text-flyquest-green hover:text-flyquest-neon transition">Calendario</a>
-          <a href="#roster" className="font-bold text-flyquest-green hover:text-flyquest-neon transition">Roster</a>
-          <a href="#stats" className="font-bold text-flyquest-green hover:text-flyquest-neon transition">Stats</a>
-        </nav>
+    <div className="min-h-screen bg-gradient-to-br from-black via-flyquest-green to-flyquest-neon text-white flex flex-col">
+      {/* Encabezado tipo landing */}
+      <header className="py-12 flex flex-col items-center justify-center bg-black/60 border-b border-flyquest-neon/30">
+        <img src="/public/logo.png" alt="FlyQuest" className="h-16 w-16 mb-4" />
+        <h1 className="text-5xl font-extrabold text-flyquest-neon mb-2 tracking-wide text-center drop-shadow-lg">FlyQuest Dashboard</h1>
+        <p className="text-lg text-flyquest-green text-center max-w-2xl">Bienvenido al panel oficial de FlyQuest. Aquí puedes ver el calendario, roster, estadísticas y logros del equipo, todo en un solo lugar.</p>
       </header>
 
-      {/* Layout principal compacto y alineado */}
-      <main className="flex flex-row max-w-7xl mx-auto mt-10 gap-6 items-start justify-center">
-        {/* Panel de alertas/notificaciones a la izquierda */}
-        <aside className="w-80 min-w-[260px] max-w-[320px] bg-black/80 rounded-2xl shadow-xl border-2 border-flyquest-neon p-4 self-start">
-          <h3 className="text-lg font-bold text-flyquest-neon mb-4 text-center">Alertas & Notificaciones</h3>
-          <div className="space-y-3">
-            <div className="flex items-center gap-2"><span>🔔</span> <span>Notificaciones</span></div>
-            <div className="flex items-center gap-2"><span>⚡</span> <span>Alertas Avanzadas</span></div>
-            <div className="flex items-center gap-2"><span>⏰</span> <span>Inicio exacto</span></div>
-            <div className="flex items-center gap-2"><span>🎯</span> <span>Remontadas en vivo</span></div>
-            <div className="flex items-center gap-2"><span>🛡️</span> <span>Draft Phase</span></div>
-          </div>
-        </aside>
-
-        {/* Centro: módulos principales en fila horizontal */}
-        <section className="flex flex-col gap-8 items-center flex-1">
-          {/* Calendario y filtros */}
+      {/* Sección principal tipo landing */}
+      <main className="flex flex-col items-center justify-center w-full px-4">
+        {/* Calendario y partidos destacados */}
+        <section className="w-full max-w-4xl mt-12 mb-8" id="calendario">
           {/* ...aquí va tu componente de calendario y filtros, tal como ya está... */}
-          {/* Lista de partidos */}
-          {/* ...aquí va la lista de partidos, tal como ya está... */}
-          {/* Módulos adicionales en fila horizontal */}
-          <div className="flex flex-row gap-6 mt-2 justify-center items-start">
-            <FlyQuestStats matches={allMatches} lang={lang} />
-            <StatsBoard matches={allMatches} lang={lang} />
-            <Achievements matches={allMatches} lang={lang} />
+          {/* ...aquí va la lista de partidos destacados... */}
+        </section>
+
+        {/* Panel de alertas/notificaciones horizontal */}
+        <section className="flex flex-row gap-8 justify-center w-full max-w-4xl mb-12">
+          <div className="flex-1 bg-black/80 rounded-2xl shadow-xl border-2 border-flyquest-neon p-6">
+            <h3 className="text-lg font-bold text-flyquest-neon mb-4 text-center">Alertas & Notificaciones</h3>
+            <div className="space-y-3">
+              <div className="flex items-center gap-2"><span>🔔</span> <span>Notificaciones</span></div>
+              <div className="flex items-center gap-2"><span>⚡</span> <span>Alertas Avanzadas</span></div>
+              <div className="flex items-center gap-2"><span>⏰</span> <span>Inicio exacto</span></div>
+              <div className="flex items-center gap-2"><span>🎯</span> <span>Remontadas en vivo</span></div>
+              <div className="flex items-center gap-2"><span>🛡️</span> <span>Draft Phase</span></div>
+            </div>
           </div>
         </section>
 
-        {/* Roster FlyQuest alineado a la derecha y más compacto */}
-        <aside className="w-[340px] max-w-[360px] ml-2 self-start" id="roster">
+        {/* Roster FlyQuest centrado y destacado */}
+        <section className="w-full max-w-3xl mb-12" id="roster">
           <PlayerStats />
-        </aside>
+        </section>
+
+        {/* Módulos adicionales en fila horizontal debajo del roster */}
+        <section className="flex flex-row gap-8 justify-center w-full max-w-5xl mb-16" id="stats">
+          <FlyQuestStats matches={allMatches} lang={lang} />
+          <StatsBoard matches={allMatches} lang={lang} />
+          <Achievements matches={allMatches} lang={lang} />
+        </section>
       </main>
 
       <FooterFlyQuest t={t} />
