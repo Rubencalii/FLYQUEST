@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react'
 import useLanguage from '../hooks/useLanguage'
-import FlyQuestRoster from './FlyQuestRoster'
 import FooterFlyQuest from './FooterFlyQuest'
 import BugReport from './BugReport'
 import AdminDashboard from './AdminDashboard'
@@ -761,17 +760,7 @@ export default function FlyQuestDashboard() {
           </div>
         </section>
 
-        {/* 2) ROSTER debajo del calendario */}
-        <section>
-          <div className="animate-slide-in" style={{ animationDelay: '0.05s' }}>
-            <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-flyquest-green to-emerald-600 dark:from-flyquest-neon dark:to-flyquest-green mb-4 flex items-center gap-2">
-              👥 {t.roster}
-            </h2>
-            <div className="card border-2 border-flyquest-green/20 dark:border-flyquest-neon/20 hover:border-flyquest-green/40 dark:hover:border-flyquest-neon/40 transition-all">
-              <FlyQuestRoster />
-            </div>
-          </div>
-        </section>
+        {/* 2) (Roster removido por petición). Continuamos con el resto */}
 
         {/* 3) TODO LO DEMÁS */}
         <section>

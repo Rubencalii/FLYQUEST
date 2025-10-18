@@ -14,10 +14,30 @@ export default function PlayerStats({ matches, lang = 'es', dark = false }) {
   React.useEffect(() => {
     const fetchPlayers = async () => {
       try {
-        const res = await fetch('/api/flyquest/roster');
+        // Nuevo endpoint que agrega estadísticas reales desde Leaguepedia
+        const res = await fetch('/api/flyquest/player-stats');
         const data = await res.json();
         if (Array.isArray(data.roster) && data.roster.length > 0) {
-          setPlayersData(data.roster);
+          // Normalizar campos faltantes con fallback amistoso
+          const normalized = data.roster.map(p => ({
+            id: p.id,
+            name: p.name,
+            role: p.role,
+            country: p.country || '—',
+            image: p.image,
+            kda: p.kda ?? 0,
+            gamesPlayed: p.gamesPlayed ?? (matches?.filter(m => m.status === 'completed').length || 0),
+            winrate: p.winrate ?? 0,
+            championPool: Array.isArray(p.championPool) && p.championPool.length ? p.championPool : ['—'],
+            stats: {
+              kills: p.stats?.kills ?? 0,
+              deaths: p.stats?.deaths ?? 0,
+              assists: p.stats?.assists ?? 0,
+              cs: p.stats?.cs ?? 0,
+              goldPerMin: p.stats?.goldPerMin ?? 0
+            }
+          }))
+          setPlayersData(normalized)
         } else {
           // Fallback: datos locales
           setPlayersData([

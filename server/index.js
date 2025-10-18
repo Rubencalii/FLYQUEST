@@ -304,6 +304,116 @@ app.get('/api/flyquest/bugs', (req, res) => {
   }
 })
 
+// Player stats (real) using Leaguepedia Cargo API + LoL Esports roster mapping
+app.get('/api/flyquest/player-stats', async (req, res) => {
+  try {
+    // 1) Obtener roster actual desde LoL Esports (para nombres, foto y roles)
+    const rosterResp = await fetch('https://esports-api.lolesports.com/persisted/gw/getTeams?hl=en-US', {
+      headers: { 'x-api-key': LOL_ESPORTS_API_KEY }
+    })
+    if (!rosterResp.ok) throw new Error('getTeams failed: ' + rosterResp.status)
+    const rosterData = await rosterResp.json()
+    const teams = rosterData?.data?.teams || []
+    const fly = teams.find(t => t.slug === 'flyquest' || t.code === 'FLY' || t.name?.toLowerCase() === 'flyquest')
+    if (!fly) return res.json({ roster: [], message: 'FlyQuest no encontrado en LoL Esports API' })
+
+    const roleMap = {
+      top: 'Top', jungle: 'Jungla', jungler: 'Jungla', mid: 'Mid', bottom: 'ADC', adc: 'ADC', support: 'Soporte'
+    }
+    const baseRoster = (fly.players || []).map((p, idx) => ({
+      id: idx + 1,
+      name: p.fullName || p.name || p.summonerName,
+      nick: p.summonerName || p.name || p.fullName,
+      role: roleMap[(p.role || '').toLowerCase()] || p.role || 'N/A',
+      country: p.country || p.hometown || null,
+      image: p.photoURL || p.image || ''
+    }))
+
+    // 2) Consultar Leaguepedia Cargo con últimos N registros de ScoreboardPlayers para FlyQuest
+    // Documentación: https://lol.fandom.com/wiki/Special:CargoTables
+    // Campos usados: Player, Team, Role, Champion, Kills, Deaths, Assists
+    const lpURL = 'https://lol.fandom.com/api.php' +
+      '?action=cargoquery&format=json' +
+      '&tables=ScoreboardPlayers' +
+      '&fields=Player,Team,Role,Champion,Kills,Deaths,Assists' +
+      '&where=' + encodeURIComponent('Team="FlyQuest"') +
+      '&limit=200'
+
+    let lpData = null
+    try {
+      const lpResp = await fetch(lpURL, { headers: { 'User-Agent': 'FlyQuestDashboard/1.0 (contact: admin@flyquest.gg)' } })
+      if (!lpResp.ok) throw new Error('Leaguepedia cargo failed: ' + lpResp.status)
+      lpData = await lpResp.json()
+    } catch (e) {
+      console.warn('Leaguepedia error:', e.message)
+      // Si falla Leaguepedia, devolver solo el roster sin stats
+      return res.json({ roster: baseRoster })
+    }
+
+    const rows = (lpData?.cargoquery || []).map(x => x.title || {})
+
+    // 3) Agregar por jugador
+    const byPlayer = {}
+    for (const r of rows) {
+      const player = r.Player || r.player || r.Link || null
+      const role = (r.Role || '').toLowerCase()
+      const kills = Number(r.Kills ?? 0)
+      const deaths = Number(r.Deaths ?? 0)
+      const assists = Number(r.Assists ?? 0)
+      const champ = r.Champion || null
+      if (!player) continue
+      if (!byPlayer[player]) byPlayer[player] = { games: 0, kills: 0, deaths: 0, assists: 0, champs: {} }
+      byPlayer[player].games += 1
+      byPlayer[player].kills += kills
+      byPlayer[player].deaths += deaths
+      byPlayer[player].assists += assists
+      if (champ) byPlayer[player].champs[champ] = (byPlayer[player].champs[champ] || 0) + 1
+    }
+
+    // 4) Fusionar con roster actual (solo jugadores del roster)
+    const final = baseRoster.map(p => {
+      // Emparejar por nick (summoner name) o name según Leaguepedia
+      const keys = [p.nick, p.name].filter(Boolean)
+      let agg = null
+      for (const k of keys) {
+        if (byPlayer[k]) { agg = byPlayer[k]; break }
+      }
+      const gamesPlayed = agg?.games || 0
+      const kills = agg?.kills || 0
+      const deaths = agg?.deaths || 0
+      const assists = agg?.assists || 0
+      const kda = deaths > 0 ? Number(((kills + assists) / deaths).toFixed(1)) : (kills + assists)
+      const championPool = Object.entries(agg?.champs || {})
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5)
+        .map(([name]) => name)
+      return {
+        id: p.id,
+        name: p.name,
+        role: p.role,
+        country: p.country,
+        image: p.image,
+        kda: gamesPlayed > 0 ? kda : null,
+        gamesPlayed,
+        winrate: null, // no fiable sin join extra; se puede añadir después
+        championPool,
+        stats: {
+          kills: gamesPlayed > 0 ? Number((kills / gamesPlayed).toFixed(1)) : null,
+          deaths: gamesPlayed > 0 ? Number((deaths / gamesPlayed).toFixed(1)) : null,
+          assists: gamesPlayed > 0 ? Number((assists / gamesPlayed).toFixed(1)) : null,
+          cs: null,
+          goldPerMin: null
+        }
+      }
+    })
+
+    return res.json({ team: fly.name || 'FlyQuest', roster: final })
+  } catch (e) {
+    console.error('player-stats error', e)
+    return res.status(500).json({ error: 'Error interno obteniendo estadísticas de jugadores', roster: [] })
+  }
+})
+
 // Endpoints de mantenimiento
 app.get('/api/mantenimiento/test-api', async (req, res) => {
   try {
