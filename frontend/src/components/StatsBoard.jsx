@@ -31,7 +31,7 @@ ChartJS.register(
 /**
  * Dashboard con gráficos avanzados de estadísticas de FlyQuest
  */
-export default function StatsBoard({ matches, lang = 'es', dark = false }) {
+export default function StatsBoard({ matches, lang = 'es' }) {
   // Calcular datos para los gráficos
   const chartsData = useMemo(() => {
     if (!matches || matches.length === 0) {
@@ -197,13 +197,13 @@ export default function StatsBoard({ matches, lang = 'es', dark = false }) {
 
   // Colores del tema
   const colors = {
-    primary: dark ? 'rgba(0, 255, 159, 0.8)' : 'rgba(34, 197, 94, 0.8)',
-    primaryBg: dark ? 'rgba(0, 255, 159, 0.1)' : 'rgba(34, 197, 94, 0.1)',
-    secondary: dark ? 'rgba(255, 71, 87, 0.8)' : 'rgba(239, 68, 68, 0.8)',
-    secondaryBg: dark ? 'rgba(255, 71, 87, 0.1)' : 'rgba(239, 68, 68, 0.1)',
-    text: dark ? '#E0E7EE' : '#1f2937',
-    grid: dark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
-    background: dark ? '#0a0e1a' : '#ffffff'
+    primary: 'rgba(0, 255, 159, 0.8)',
+    primaryBg: 'rgba(0, 255, 159, 0.1)',
+    secondary: 'rgba(255, 71, 87, 0.8)',
+    secondaryBg: 'rgba(255, 71, 87, 0.1)',
+    text: '#E0E7EE',
+    grid: 'rgba(255, 255, 255, 0.1)',
+    background: '#0a0e1a'
   }
 
   // Configuración común para todos los gráficos
@@ -225,7 +225,7 @@ export default function StatsBoard({ matches, lang = 'es', dark = false }) {
       },
       tooltip: {
         enabled: true,
-        backgroundColor: dark ? 'rgba(10, 14, 26, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+        backgroundColor: 'rgba(10, 14, 26, 0.95)',
         titleColor: colors.text,
         bodyColor: colors.text,
         borderColor: colors.primary,
