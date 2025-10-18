@@ -832,9 +832,9 @@ export default function FlyQuestDashboard() {
 
               {/* Stats y módulos adicionales - usar allMatches (incluye históricos) */}
               <FlyQuestStats matches={allMatches} lang={lang} />
-              <StatsBoard matches={allMatches} lang={lang} dark={dark} />
+              <StatsBoard matches={allMatches} lang={lang} />
               <Achievements matches={allMatches} lang={lang} />
-              <PlayerStats matches={matches} lang={lang} dark={dark} />
+              <PlayerStats matches={matches} lang={lang} />
             </div>
           )}
 

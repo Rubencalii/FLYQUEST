@@ -145,10 +145,11 @@ app.get('/api/flyquest/matches', async (req, res) => {
       const flyquestTeam = teams.find(t => t.slug === FLYQUEST_SLUG || t.code === 'FLY');
       const opponentTeam = teams.find(t => t.slug !== FLYQUEST_SLUG && t.code !== 'FLY');
 
-      // Determinar el estado del partido
-      let status = 'not_started';
-      if (event.state === 'completed') status = 'finished';
-      else if (event.state === 'inProgress') status = 'running';
+  // Determinar el estado del partido (mapeo compatible con frontend)
+  let status = 'unstarted';
+  if (event.state === 'completed') status = 'completed';
+  else if (event.state === 'inProgress') status = 'inProgress';
+  else if (event.state === 'upcoming') status = 'upcoming';
 
       // Scores
       const flyquestScore = flyquestTeam?.result?.gameWins || 0;
