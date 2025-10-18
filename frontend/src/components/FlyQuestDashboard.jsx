@@ -897,9 +897,24 @@ export default function FlyQuestDashboard() {
         )}
       </main>
 
-      {/* Roster FlyQuest debajo del calendario */}
-      <div className="max-w-4xl mx-auto mt-10 mb-10">
-        <PlayerStats />
+      {/* Roster FlyQuest y panel de alertas en layout horizontal */}
+      <div className="flex flex-row max-w-6xl mx-auto mt-10 mb-10 gap-8 items-start">
+        {/* Panel de alertas reducido */}
+        <div className="w-96 min-w-[320px] max-w-[400px] bg-black/80 rounded-2xl shadow-xl border-2 border-flyquest-neon p-4">
+          <h3 className="text-lg font-bold text-flyquest-neon mb-4 text-center">Alertas & Notificaciones</h3>
+          {/* Aquí puedes renderizar el panel de alertas, por ejemplo: */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2"><span>🔔</span> <span>Notificaciones</span></div>
+            <div className="flex items-center gap-2"><span>⚡</span> <span>Alertas Avanzadas</span></div>
+            <div className="flex items-center gap-2"><span>⏰</span> <span>Inicio exacto</span></div>
+            <div className="flex items-center gap-2"><span>🎯</span> <span>Remontadas en vivo</span></div>
+            <div className="flex items-center gap-2"><span>🛡️</span> <span>Draft Phase</span></div>
+          </div>
+        </div>
+        {/* Roster FlyQuest */}
+        <div className="flex-1">
+          <PlayerStats />
+        </div>
       </div>
 
       <FooterFlyQuest t={t} />
