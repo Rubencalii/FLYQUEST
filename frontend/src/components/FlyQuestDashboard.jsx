@@ -558,7 +558,6 @@ export default function FlyQuestDashboard() {
           <img src="/public/logo.png" alt="FlyQuest" className="h-10 w-10" />
           <span className="text-2xl font-extrabold text-flyquest-neon tracking-wide">FlyQuest Dashboard</span>
         </div>
-        {/* Menú principal (puedes agregar más opciones aquí) */}
         <nav className="flex gap-6">
           <a href="#calendario" className="font-bold text-flyquest-green hover:text-flyquest-neon transition">Calendario</a>
           <a href="#roster" className="font-bold text-flyquest-green hover:text-flyquest-neon transition">Roster</a>
@@ -566,10 +565,10 @@ export default function FlyQuestDashboard() {
         </nav>
       </header>
 
-      {/* Layout principal: calendario, alertas, roster y partidos */}
-      <main className="flex flex-row max-w-7xl mx-auto mt-10 gap-8 items-start">
+      {/* Layout principal compacto y alineado */}
+      <main className="flex flex-row max-w-7xl mx-auto mt-10 gap-6 items-start justify-center">
         {/* Panel de alertas/notificaciones a la izquierda */}
-        <aside className="w-96 min-w-[320px] max-w-[400px] bg-black/80 rounded-2xl shadow-xl border-2 border-flyquest-neon p-4">
+        <aside className="w-80 min-w-[260px] max-w-[320px] bg-black/80 rounded-2xl shadow-xl border-2 border-flyquest-neon p-4 self-start">
           <h3 className="text-lg font-bold text-flyquest-neon mb-4 text-center">Alertas & Notificaciones</h3>
           <div className="space-y-3">
             <div className="flex items-center gap-2"><span>🔔</span> <span>Notificaciones</span></div>
@@ -580,22 +579,22 @@ export default function FlyQuestDashboard() {
           </div>
         </aside>
 
-        {/* Centro: calendario y partidos */}
-        <section className="flex-1" id="calendario">
+        {/* Centro: módulos principales en fila horizontal */}
+        <section className="flex flex-col gap-8 items-center flex-1">
           {/* Calendario y filtros */}
           {/* ...aquí va tu componente de calendario y filtros, tal como ya está... */}
           {/* Lista de partidos */}
           {/* ...aquí va la lista de partidos, tal como ya está... */}
-          {/* Módulos adicionales debajo de partidos */}
-          <div className="flex flex-row gap-6 mt-10" id="stats">
+          {/* Módulos adicionales en fila horizontal */}
+          <div className="flex flex-row gap-6 mt-2 justify-center items-start">
             <FlyQuestStats matches={allMatches} lang={lang} />
             <StatsBoard matches={allMatches} lang={lang} />
             <Achievements matches={allMatches} lang={lang} />
           </div>
         </section>
 
-        {/* Roster FlyQuest a la derecha */}
-        <aside className="w-[480px] max-w-[520px]" id="roster">
+        {/* Roster FlyQuest alineado a la derecha y más compacto */}
+        <aside className="w-[340px] max-w-[360px] ml-2 self-start" id="roster">
           <PlayerStats />
         </aside>
       </main>
