@@ -304,6 +304,59 @@ app.get('/api/flyquest/bugs', (req, res) => {
   }
 })
 
+// Historical matches from Leaguepedia (for achievements/stats fallback)
+app.get('/api/flyquest/historical-matches', async (req, res) => {
+  try {
+    // Query Leaguepedia ScoreboardGames for FlyQuest last 6-12 months
+    const lpURL = 'https://lol.fandom.com/api.php' +
+      '?action=cargoquery&format=json' +
+      '&tables=ScoreboardGames' +
+      '&fields=Team1,Team2,Winner,Team1Score,Team2Score,DateTime_UTC,Tournament,MatchId,Tab' +
+      '&where=' + encodeURIComponent('(Team1="FlyQuest" OR Team2="FlyQuest")') +
+      '&order_by=DateTime_UTC DESC' +
+      '&limit=200'
+
+    const lpResp = await fetch(lpURL, { headers: { 'User-Agent': 'FlyQuestDashboard/1.0' } })
+    if (!lpResp.ok) throw new Error('Leaguepedia ScoreboardGames failed: ' + lpResp.status)
+    const lpData = await lpResp.json()
+    const rows = (lpData?.cargoquery || []).map(x => x.title || {})
+
+    const formatted = rows.map((r, idx) => {
+      const team1 = r.Team1 || ''
+      const team2 = r.Team2 || ''
+      const winner = r.Winner || ''
+      const team1Score = Number(r.Team1Score ?? 0)
+      const team2Score = Number(r.Team2Score ?? 0)
+      const dateTime = r.DateTime_UTC || new Date().toISOString()
+      const tournament = r.Tournament || 'Unknown'
+
+      const isFlyTeam1 = team1.toLowerCase().includes('flyquest')
+      const flyTeam = isFlyTeam1 ? team1 : team2
+      const oppTeam = isFlyTeam1 ? team2 : team1
+      const flyScore = isFlyTeam1 ? team1Score : team2Score
+      const oppScore = isFlyTeam1 ? team2Score : team1Score
+
+      return {
+        id: `historical-${r.MatchId || idx}`,
+        status: 'finished',
+        startTime: dateTime,
+        teams: [
+          { name: flyTeam, code: 'FLY', slug: 'flyquest', logo: '', score: flyScore },
+          { name: oppTeam, code: oppTeam.substring(0, 3).toUpperCase(), logo: '', score: oppScore }
+        ],
+        format: 'bo1', // simplificado
+        league: tournament
+      }
+    })
+
+    console.log(`✅ Historical: ${formatted.length} matches from Leaguepedia`)
+    return res.json({ matches: formatted, total: formatted.length, source: 'Leaguepedia (historical)' })
+  } catch (e) {
+    console.error('historical-matches error', e)
+    return res.status(500).json({ error: 'Error obteniendo datos históricos', matches: [] })
+  }
+})
+
 // Player stats (real) using Leaguepedia Cargo API + LoL Esports roster mapping
 app.get('/api/flyquest/player-stats', async (req, res) => {
   try {

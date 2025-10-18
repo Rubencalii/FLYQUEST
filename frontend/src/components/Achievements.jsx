@@ -10,23 +10,23 @@ export default function Achievements({ matches, lang = 'es' }) {
     if (!matches || matches.length === 0) return []
 
     const completedMatches = matches
-      .filter(m => m.status === 'completed')
+      .filter(m => ['completed', 'finished'].includes(m.status))
       .sort((a, b) => new Date(a.startTime) - new Date(b.startTime))
 
     if (completedMatches.length === 0) return []
 
     const results = completedMatches.map(match => {
       const flyquestTeam = match.teams?.find(t => 
-        t.name?.toLowerCase().includes('flyquest') || t.code === 'FLY'
+        (t.slug === 'flyquest') || (t.code === 'FLY') || t.name?.toLowerCase().includes('flyquest')
       )
-      const opponentTeam = match.teams?.find(t => 
-        !t.name?.toLowerCase().includes('flyquest') && t.code !== 'FLY'
-      )
+      const opponentTeam = match.teams?.find(t => t !== flyquestTeam)
       
-      const won = flyquestTeam && opponentTeam && flyquestTeam.score > opponentTeam.score
-      const score = `${flyquestTeam?.score || 0}-${opponentTeam?.score || 0}`
+      const flyScore = typeof flyquestTeam?.score === 'number' ? flyquestTeam.score : (flyquestTeam?.result?.gameWins ?? 0)
+      const oppScore = typeof opponentTeam?.score === 'number' ? opponentTeam.score : (opponentTeam?.result?.gameWins ?? 0)
+      const won = (flyScore ?? -1) > (oppScore ?? -1)
+      const score = `${flyScore || 0}-${oppScore || 0}`
       
-      return { won, match, score, flyquestScore: flyquestTeam?.score || 0, opponentScore: opponentTeam?.score || 0 }
+      return { won, match, score, flyquestScore: flyScore || 0, opponentScore: oppScore || 0 }
     })
 
     const achievementsList = []

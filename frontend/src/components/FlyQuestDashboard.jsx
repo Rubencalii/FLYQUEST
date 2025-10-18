@@ -298,6 +298,8 @@ export default function FlyQuestDashboard() {
   const [headerLogoError, setHeaderLogoError] = useState(false)
   const [favorites, setFavorites] = useState([]) // IDs de partidos favoritos
   const [showOnlyFavorites, setShowOnlyFavorites] = useState(false) // Filtro de favoritos
+  const [historicalMatches, setHistoricalMatches] = useState([]) // Datos históricos de Leaguepedia
+  const [allMatches, setAllMatches] = useState([]) // Combina matches recientes + históricos
 
   // Cargar favoritos desde localStorage al iniciar
   useEffect(() => {
@@ -386,6 +388,20 @@ export default function FlyQuestDashboard() {
     }
   }, [])
 
+  const fetchHistoricalMatches = useCallback(async () => {
+    try {
+      const res = await fetch('/api/flyquest/historical-matches')
+      if (!res.ok) throw new Error('Historical fetch failed')
+      const data = await res.json()
+      const hist = Array.isArray(data.matches) ? data.matches : []
+      setHistoricalMatches(hist)
+      console.log('✅ Datos históricos:', hist.length, 'partidos')
+    } catch (e) {
+      console.warn('⚠️ No se pudieron cargar datos históricos:', e.message)
+      setHistoricalMatches([])
+    }
+  }, [])
+
   useEffect(() => {
     // Cargar logos (no bloqueante)
     fetch('/teamLogos.json')
@@ -404,9 +420,10 @@ export default function FlyQuestDashboard() {
 
     // Cargar partidos inmediatamente (no esperar logos)
     fetchMatches()
+    fetchHistoricalMatches() // Cargar datos históricos una vez
     const iv = setInterval(fetchMatches, 30000)
     return () => clearInterval(iv)
-  }, [])
+  }, [fetchMatches, fetchHistoricalMatches])
 
   useEffect(() => {
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -419,6 +436,17 @@ export default function FlyQuestDashboard() {
   useEffect(() => {
     document.documentElement.classList.toggle('dark', dark)
   }, [dark])
+
+  // Combinar partidos recientes y históricos para stats/achievements
+  useEffect(() => {
+    // Unir matches recientes (LoL Esports) con históricos (Leaguepedia)
+    // Evitar duplicados por ID
+    const recentIds = new Set(matches.map(m => m.id))
+    const uniqueHistorical = historicalMatches.filter(h => !recentIds.has(h.id))
+    const combined = [...matches, ...uniqueHistorical]
+    setAllMatches(combined)
+    console.log('📊 Total partidos para stats:', combined.length, '(recientes:', matches.length, '+ históricos:', uniqueHistorical.length, ')')
+  }, [matches, historicalMatches])
 
   // Combinar partidos con logos personalizados (priorizar API, luego personalizados, luego fallback)
   const matchesWithLogos = useMemo(() => {
@@ -808,10 +836,10 @@ export default function FlyQuestDashboard() {
                 })
               )}
 
-              {/* Stats y módulos adicionales */}
-              <FlyQuestStats matches={matches} lang={lang} />
-              <StatsBoard matches={matches} lang={lang} dark={dark} />
-              <Achievements matches={matches} lang={lang} />
+              {/* Stats y módulos adicionales - usar allMatches (incluye históricos) */}
+              <FlyQuestStats matches={allMatches} lang={lang} />
+              <StatsBoard matches={allMatches} lang={lang} dark={dark} />
+              <Achievements matches={allMatches} lang={lang} />
               <PlayerStats matches={matches} lang={lang} dark={dark} />
             </div>
           )}

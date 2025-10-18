@@ -40,7 +40,7 @@ export default function StatsBoard({ matches, lang = 'es', dark = false }) {
     }
 
     // Filtrar solo partidos completados
-    const completedMatches = matches.filter(m => m.status === 'completed')
+    const completedMatches = matches.filter(m => ['completed', 'finished'].includes(m.status))
     
     if (completedMatches.length === 0) {
       console.log('⚠️ StatsBoard: No hay partidos completados')
@@ -67,12 +67,14 @@ export default function StatsBoard({ matches, lang = 'es', dark = false }) {
 
     sortedMatches.forEach((match, idx) => {
       const flyquestTeam = match.teams?.find(t => 
-        t.name?.toLowerCase().includes('flyquest')
+        (t.slug === 'flyquest') || (t.code === 'FLY') || t.name?.toLowerCase().includes('flyquest')
       )
-      
-      if (!flyquestTeam) return
+      const opponentTeam = match.teams?.find(t => t !== flyquestTeam)
+      if (!flyquestTeam || !opponentTeam) return
 
-      const isWin = flyquestTeam.result?.outcome === 'win'
+      const flyScore = typeof flyquestTeam.score === 'number' ? flyquestTeam.score : (flyquestTeam.result?.gameWins ?? 0)
+      const oppScore = typeof opponentTeam.score === 'number' ? opponentTeam.score : (opponentTeam.result?.gameWins ?? 0)
+      const isWin = flyScore > oppScore
       
       if (isWin) {
         cumulativeWins++
@@ -130,10 +132,12 @@ export default function StatsBoard({ matches, lang = 'es', dark = false }) {
     // 4. ÚLTIMOS 10 PARTIDOS
     const last10 = sortedMatches.slice(-10).map(match => {
       const flyquestTeam = match.teams?.find(t => 
-        t.name?.toLowerCase().includes('flyquest')
+        (t.slug === 'flyquest') || (t.code === 'FLY') || t.name?.toLowerCase().includes('flyquest')
       )
-      const isWin = flyquestTeam?.result?.outcome === 'win'
-      const opponent = match.teams?.find(t => !t.name?.toLowerCase().includes('flyquest'))
+      const opponent = match.teams?.find(t => t !== flyquestTeam)
+      const flyScore = typeof flyquestTeam?.score === 'number' ? flyquestTeam.score : (flyquestTeam?.result?.gameWins ?? 0)
+      const oppScore = typeof opponent?.score === 'number' ? opponent.score : (opponent?.result?.gameWins ?? 0)
+      const isWin = (flyScore ?? -1) > (oppScore ?? -1)
       
       return {
         opponent: opponent?.code || opponent?.name?.substring(0, 3)?.toUpperCase() || 'TBD',
