@@ -559,17 +559,17 @@ export default function FlyQuestDashboard() {
         <p className="text-lg text-flyquest-green text-center max-w-2xl">Bienvenido al panel oficial de FlyQuest. Aquí puedes ver el calendario, roster, estadísticas y logros del equipo, todo en un solo lugar.</p>
       </header>
 
-      {/* Sección principal tipo landing */}
+      {/* Sección principal vertical y elegante */}
       <main className="flex flex-col items-center justify-center w-full px-4">
         {/* Calendario y partidos destacados */}
-        <section className="w-full max-w-4xl mt-12 mb-8" id="calendario">
+        <section className="w-full max-w-3xl mt-12 mb-8" id="calendario">
           {/* ...aquí va tu componente de calendario y filtros, tal como ya está... */}
           {/* ...aquí va la lista de partidos destacados... */}
         </section>
 
-        {/* Panel de alertas/notificaciones horizontal */}
-        <section className="flex flex-row gap-8 justify-center w-full max-w-4xl mb-12">
-          <div className="flex-1 bg-black/80 rounded-2xl shadow-xl border-2 border-flyquest-neon p-6">
+        {/* Panel de alertas/notificaciones vertical */}
+        <section className="w-full max-w-2xl mb-8">
+          <div className="bg-black/80 rounded-2xl shadow-xl border-2 border-flyquest-neon p-6">
             <h3 className="text-lg font-bold text-flyquest-neon mb-4 text-center">Alertas & Notificaciones</h3>
             <div className="space-y-3">
               <div className="flex items-center gap-2"><span>🔔</span> <span>Notificaciones</span></div>
@@ -582,12 +582,12 @@ export default function FlyQuestDashboard() {
         </section>
 
         {/* Roster FlyQuest centrado y destacado */}
-        <section className="w-full max-w-3xl mb-12" id="roster">
+        <section className="w-full max-w-3xl mb-8" id="roster">
           <PlayerStats />
         </section>
 
-        {/* Módulos adicionales en fila horizontal debajo del roster */}
-        <section className="flex flex-row gap-8 justify-center w-full max-w-5xl mb-16" id="stats">
+        {/* Módulos adicionales en vertical debajo del roster */}
+        <section className="w-full max-w-3xl mb-16 flex flex-col gap-8" id="stats">
           <FlyQuestStats matches={allMatches} lang={lang} />
           <StatsBoard matches={allMatches} lang={lang} />
           <Achievements matches={allMatches} lang={lang} />
