@@ -9,6 +9,7 @@ export default function PlayerStats({ matches, lang = 'es', dark = false }) {
   // Datos visuales del roster
   const [selectedPlayer, setSelectedPlayer] = useState(null);
   const [playersData, setPlayersData] = useState([]);
+  const [isOfficial, setIsOfficial] = useState(false);
 
   // Fetch datos reales a través del backend (oculta API key)
   React.useEffect(() => {
@@ -18,6 +19,9 @@ export default function PlayerStats({ matches, lang = 'es', dark = false }) {
         const res = await fetch('/api/flyquest/player-stats');
         const data = await res.json();
         if (Array.isArray(data.roster) && data.roster.length > 0) {
+          // Si los datos tienen winrate > 0, consideramos que son oficiales
+          const isReal = data.roster.some(p => p.winrate > 0);
+          setIsOfficial(isReal);
           // Normalizar campos faltantes con fallback amistoso
           const normalized = data.roster.map(p => ({
             id: p.id,
@@ -39,6 +43,7 @@ export default function PlayerStats({ matches, lang = 'es', dark = false }) {
           }))
           setPlayersData(normalized)
         } else {
+          setIsOfficial(false);
           // Fallback: datos locales
           setPlayersData([
             {
@@ -363,9 +368,16 @@ export default function PlayerStats({ matches, lang = 'es', dark = false }) {
 
   return (
     <div className="card">
-      <h2 className="text-2xl font-bold text-flyquest-green dark:text-flyquest-neon mb-6">
-        {translations.title}
-      </h2>
+      <div className="flex items-center gap-3 mb-2">
+        <h2 className="text-2xl font-bold text-flyquest-green dark:text-flyquest-neon">
+          {translations.title}
+        </h2>
+        {isOfficial && (
+          <span className="px-3 py-1 rounded-full bg-flyquest-neon/20 text-flyquest-neon text-xs font-bold border border-flyquest-neon/40 animate-pulse">
+            Datos oficiales
+          </span>
+        )}
+      </div>
       <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{translations.subtitle}</p>
       <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
         {translations.selectPlayer}

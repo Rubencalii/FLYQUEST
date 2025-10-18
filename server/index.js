@@ -382,23 +382,38 @@ app.get('/api/flyquest/player-stats', async (req, res) => {
       image: p.photoURL || p.image || ''
     }))
 
-    // 2) Consultar Leaguepedia Cargo con límite alto (500) para obtener suficiente histórico
-    // Usar año actual (2025) para últimos 12 meses
-    const lpURL = 'https://lol.fandom.com/api.php' +
+    // 2) Consultar Leaguepedia Cargo para ScoreboardPlayers y ScoreboardGames
+    // ScoreboardPlayers: stats individuales
+    const lpPlayersURL = 'https://lol.fandom.com/api.php' +
       '?action=cargoquery&format=json' +
       '&tables=ScoreboardPlayers' +
-      '&fields=Link,Team,Role,Champion,Kills,Deaths,Assists' +
+      '&fields=Link,Team,Role,Champion,Kills,Deaths,Assists,MatchId' +
       '&where=' + encodeURIComponent('Team="FlyQuest" AND Year>=2024') +
       '&order_by=DateTime_UTC DESC' +
       '&limit=500'
 
-    let lpData = null
+    // ScoreboardGames: resultados de partidos
+    const lpGamesURL = 'https://lol.fandom.com/api.php' +
+      '?action=cargoquery&format=json' +
+      '&tables=ScoreboardGames' +
+      '&fields=MatchId,Team1,Team2,Winner' +
+      '&where=' + encodeURIComponent('(Team1="FlyQuest" OR Team2="FlyQuest") AND Year>=2024') +
+      '&order_by=DateTime_UTC DESC' +
+      '&limit=500'
+
+    let lpPlayersData = null
+    let lpGamesData = null
     try {
-      const lpResp = await fetch(lpURL, { headers: { 'User-Agent': 'FlyQuestDashboard/1.0 (contact: admin@flyquest.gg)' } })
-      if (!lpResp.ok) throw new Error('Leaguepedia cargo failed: ' + lpResp.status)
-      lpData = await lpResp.json()
+      const [lpPlayersResp, lpGamesResp] = await Promise.all([
+        fetch(lpPlayersURL, { headers: { 'User-Agent': 'FlyQuestDashboard/1.0 (contact: admin@flyquest.gg)' } }),
+        fetch(lpGamesURL, { headers: { 'User-Agent': 'FlyQuestDashboard/1.0 (contact: admin@flyquest.gg)' } })
+      ])
+      if (!lpPlayersResp.ok) throw new Error('Leaguepedia ScoreboardPlayers failed: ' + lpPlayersResp.status)
+      if (!lpGamesResp.ok) throw new Error('Leaguepedia ScoreboardGames failed: ' + lpGamesResp.status)
+      lpPlayersData = await lpPlayersResp.json()
+      lpGamesData = await lpGamesResp.json()
     } catch (e) {
-      console.warn('⚠️ Leaguepedia ScoreboardPlayers error:', e.message)
+      console.warn('⚠️ Leaguepedia error:', e.message)
       // Si falla, devolver roster vacío de stats pero con estructura
       const emptyStats = baseRoster.map(p => ({
         ...p,
@@ -411,46 +426,56 @@ app.get('/api/flyquest/player-stats', async (req, res) => {
       return res.json({ roster: emptyStats, source: 'LoL Esports (no Leaguepedia stats)' })
     }
 
-    const rows = (lpData?.cargoquery || []).map(x => x.title || {})
-    console.log(`✅ Leaguepedia: ${rows.length} registros de ScoreboardPlayers`)
+    const playerRows = (lpPlayersData?.cargoquery || []).map(x => x.title || {})
+    const gameRows = (lpGamesData?.cargoquery || []).map(x => x.title || {})
+    console.log(`✅ Leaguepedia: ${playerRows.length} ScoreboardPlayers, ${gameRows.length} ScoreboardGames`)
 
     // 3) Agregar por jugador (usando Link, que es el ID de jugador en Leaguepedia)
     const byPlayer = {}
-    for (const r of rows) {
-      // Link es el nombre estándar del jugador en Leaguepedia (ej: "Bwipo", "Inspired")
+    for (const r of playerRows) {
       const player = (r.Link || '').trim()
       const kills = Number(r.Kills ?? 0)
       const deaths = Number(r.Deaths ?? 0)
       const assists = Number(r.Assists ?? 0)
       const champ = (r.Champion || '').trim()
+      const matchId = r.MatchId
       if (!player) continue
-      if (!byPlayer[player]) byPlayer[player] = { games: 0, kills: 0, deaths: 0, assists: 0, champs: {} }
+      if (!byPlayer[player]) byPlayer[player] = { games: 0, kills: 0, deaths: 0, assists: 0, champs: {}, matchIds: [] }
       byPlayer[player].games += 1
       byPlayer[player].kills += kills
       byPlayer[player].deaths += deaths
       byPlayer[player].assists += assists
       if (champ) byPlayer[player].champs[champ] = (byPlayer[player].champs[champ] || 0) + 1
+      if (matchId) byPlayer[player].matchIds.push(matchId)
     }
 
-    console.log('📊 Jugadores encontrados en Leaguepedia:', Object.keys(byPlayer))
+    // 4) Calcular winrate por jugador usando ScoreboardGames
+    // Para cada jugador, contar partidos jugados y ganados
+    const matchResults = {}
+    for (const g of gameRows) {
+      const matchId = g.MatchId
+      const winner = (g.Winner || '').trim()
+      const team1 = (g.Team1 || '').trim()
+      const team2 = (g.Team2 || '').trim()
+      matchResults[matchId] = { winner, team1, team2 }
+    }
 
-    // 4) Fusionar con roster actual usando nombres normalizados
+    // 5) Fusionar con roster actual usando nombres normalizados
     const final = baseRoster.map(p => {
-      // Normalizar nombre para emparejar (eliminar espacios, lowercase)
       const normalize = (str) => (str || '').toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9]/g, '')
       const normName = normalize(p.name)
       const normNick = normalize(p.nick)
 
-      // Buscar en byPlayer con varios intentos de emparejamiento
       let agg = null
+      let playerKey = null
       for (const [lpPlayer, data] of Object.entries(byPlayer)) {
         const normLp = normalize(lpPlayer)
-        // Intentar coincidencias: nombre completo, nick, o que uno contenga al otro
         if (normLp === normName || normLp === normNick || 
             normName.includes(normLp) || normNick.includes(normLp) ||
             lpPlayer.toLowerCase() === p.name.toLowerCase() ||
             lpPlayer.toLowerCase() === p.nick.toLowerCase()) {
           agg = data
+          playerKey = lpPlayer
           console.log(`✅ Emparejado: ${p.name} (${p.nick}) → ${lpPlayer}`)
           break
         }
@@ -465,7 +490,22 @@ app.get('/api/flyquest/player-stats', async (req, res) => {
         .sort((a, b) => b[1] - a[1])
         .slice(0, 5)
         .map(([name]) => name)
-      
+
+      // Calcular winrate real
+      let winCount = 0
+      let totalGames = 0
+      if (agg?.matchIds && agg.matchIds.length > 0) {
+        for (const mId of agg.matchIds) {
+          const result = matchResults[mId]
+          if (result) {
+            totalGames++
+            // Si el ganador es FlyQuest
+            if (result.winner.toLowerCase().includes('flyquest')) winCount++
+          }
+        }
+      }
+      const winrate = totalGames > 0 ? Number(((winCount / totalGames) * 100).toFixed(1)) : 0
+
       return {
         id: p.id,
         name: p.name,
@@ -474,7 +514,7 @@ app.get('/api/flyquest/player-stats', async (req, res) => {
         image: p.image,
         kda: gamesPlayed > 0 ? kda : 0,
         gamesPlayed,
-        winrate: 0, // TODO: calcular con join a ScoreboardGames
+        winrate,
         championPool: championPool.length > 0 ? championPool : ['—'],
         stats: {
           kills: gamesPlayed > 0 ? Number((kills / gamesPlayed).toFixed(1)) : 0,

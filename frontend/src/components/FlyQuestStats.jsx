@@ -122,8 +122,8 @@ export default function FlyQuestStats({ matches, lang = 'es' }) {
 
   if (!stats) {
     return (
-      <div className="bg-white dark:bg-flyquest-dark/50 rounded-2xl shadow-xl p-8 backdrop-blur-sm border border-flyquest-green/20 dark:border-flyquest-neon/30">
-        <div className="text-center text-gray-500 dark:text-gray-400">
+      <div className="bg-flyquest-dark/50 rounded-2xl shadow-xl p-8 backdrop-blur-sm border border-flyquest-neon/30">
+        <div className="text-center text-flyquest-gray">
           {lang === 'es' 
             ? '📊 No hay estadísticas disponibles aún' 
             : '📊 No statistics available yet'}
@@ -173,8 +173,8 @@ export default function FlyQuestStats({ matches, lang = 'es' }) {
 
   const getStreakColor = (type) => {
     return type === 'win' 
-      ? 'text-green-600 dark:text-green-400' 
-      : 'text-red-600 dark:text-red-400'
+      ? 'text-green-400' 
+      : 'text-red-400'
   }
 
   const getStreakIcon = (type) => {
@@ -182,19 +182,19 @@ export default function FlyQuestStats({ matches, lang = 'es' }) {
   }
 
   const getWinrateColor = (winrate) => {
-    if (winrate >= 60) return 'text-green-600 dark:text-green-400'
-    if (winrate >= 50) return 'text-yellow-600 dark:text-yellow-400'
-    return 'text-red-600 dark:text-red-400'
+    if (winrate >= 60) return 'text-green-400'
+    if (winrate >= 50) return 'text-yellow-400'
+    return 'text-red-400'
   }
 
   return (
-    <div className="bg-white dark:bg-flyquest-dark/50 rounded-2xl shadow-xl p-6 backdrop-blur-sm border border-flyquest-green/20 dark:border-flyquest-neon/30 space-y-6">
+    <div className="bg-flyquest-dark/50 rounded-2xl shadow-xl p-6 backdrop-blur-sm border border-flyquest-neon/30 space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-4">
-        <h2 className="text-2xl font-black text-gray-900 dark:text-white">
+      <div className="flex items-center justify-between border-b border-flyquest-neon/30 pb-4">
+        <h2 className="text-2xl font-black text-flyquest-white">
           {t.title}
         </h2>
-        <div className="text-sm text-gray-500 dark:text-gray-400">
+        <div className="text-sm text-flyquest-gray">
           {stats.totalGames} {t.games}
         </div>
       </div>
@@ -202,28 +202,28 @@ export default function FlyQuestStats({ matches, lang = 'es' }) {
       {/* Rendimiento General */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Victorias */}
-        <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-xl p-4 border border-green-200 dark:border-green-700">
-          <div className="text-sm font-medium text-green-700 dark:text-green-400 mb-1">
+        <div className="bg-flyquest-dark/80 rounded-xl p-4 border border-green-700">
+          <div className="text-sm font-medium text-green-400 mb-1">
             ✅ {t.wins}
           </div>
-          <div className="text-3xl font-black text-green-600 dark:text-green-400">
+          <div className="text-3xl font-black text-green-400">
             {stats.wins}
           </div>
         </div>
 
         {/* Derrotas */}
-        <div className="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 rounded-xl p-4 border border-red-200 dark:border-red-700">
-          <div className="text-sm font-medium text-red-700 dark:text-red-400 mb-1">
+        <div className="bg-flyquest-dark/80 rounded-xl p-4 border border-red-700">
+          <div className="text-sm font-medium text-red-400 mb-1">
             ❌ {t.losses}
           </div>
-          <div className="text-3xl font-black text-red-600 dark:text-red-400">
+          <div className="text-3xl font-black text-red-400">
             {stats.losses}
           </div>
         </div>
 
         {/* Winrate */}
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-xl p-4 border border-blue-200 dark:border-blue-700">
-          <div className="text-sm font-medium text-blue-700 dark:text-blue-400 mb-1">
+        <div className="bg-flyquest-dark/80 rounded-xl p-4 border border-blue-700">
+          <div className="text-sm font-medium text-blue-400 mb-1">
             📈 {t.winrate}
           </div>
           <div className={`text-3xl font-black ${getWinrateColor(stats.winrate)}`}>
@@ -232,8 +232,8 @@ export default function FlyQuestStats({ matches, lang = 'es' }) {
         </div>
 
         {/* Racha Actual */}
-        <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-xl p-4 border border-purple-200 dark:border-purple-700">
-          <div className="text-sm font-medium text-purple-700 dark:text-purple-400 mb-1">
+        <div className="bg-flyquest-dark/80 rounded-xl p-4 border border-purple-700">
+          <div className="text-sm font-medium text-purple-400 mb-1">
             {getStreakIcon(stats.currentStreakType)} {t.streak}
           </div>
           <div className={`text-3xl font-black ${getStreakColor(stats.currentStreakType)}`}>
@@ -243,24 +243,24 @@ export default function FlyQuestStats({ matches, lang = 'es' }) {
       </div>
 
       {/* Récords */}
-      <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 space-y-2">
-        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">
+      <div className="bg-flyquest-dark/70 rounded-xl p-4 space-y-2">
+        <h3 className="text-lg font-bold text-flyquest-white mb-3">
           🏆 {t.records}
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-600 dark:text-gray-400">
+            <span className="text-sm text-flyquest-gray">
               🔥 {t.bestWinStreak}:
             </span>
-            <span className="font-bold text-green-600 dark:text-green-400">
+            <span className="font-bold text-green-400">
               {stats.bestWinStreak}W
             </span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-600 dark:text-gray-400">
+            <span className="text-sm text-flyquest-gray">
               ❄️ {t.bestLossStreak}:
             </span>
-            <span className="font-bold text-red-600 dark:text-red-400">
+            <span className="font-bold text-red-400">
               {stats.bestLossStreak}L
             </span>
           </div>
@@ -270,17 +270,17 @@ export default function FlyQuestStats({ matches, lang = 'es' }) {
       {/* Por Torneo */}
       {stats.tournamentStats.length > 0 && (
         <div className="space-y-3">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+          <h3 className="text-lg font-bold text-flyquest-white">
             🏆 {t.byTournament}
           </h3>
           <div className="space-y-2">
             {stats.tournamentStats.map((tournament, idx) => (
               <div 
                 key={idx}
-                className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                className="bg-flyquest-dark/70 rounded-lg p-3 hover:bg-flyquest-dark/90 transition-colors"
               >
                 <div className="flex items-center justify-between mb-2">
-                  <span className="font-semibold text-gray-900 dark:text-white text-sm">
+                  <span className="font-semibold text-flyquest-white text-sm">
                     {tournament.name}
                   </span>
                   <span className={`font-bold ${getWinrateColor(tournament.winrate)}`}>
@@ -288,18 +288,18 @@ export default function FlyQuestStats({ matches, lang = 'es' }) {
                   </span>
                 </div>
                 <div className="flex items-center gap-4 text-xs">
-                  <span className="text-green-600 dark:text-green-400">
+                  <span className="text-green-400">
                     {tournament.wins}W
                   </span>
-                  <span className="text-red-600 dark:text-red-400">
+                  <span className="text-red-400">
                     {tournament.losses}L
                   </span>
-                  <span className="text-gray-500 dark:text-gray-400">
+                  <span className="text-flyquest-gray">
                     {tournament.total} {lang === 'es' ? 'partidos' : 'games'}
                   </span>
                 </div>
                 {/* Barra de progreso */}
-                <div className="mt-2 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                <div className="mt-2 h-2 bg-flyquest-dark/80 rounded-full overflow-hidden">
                   <div 
                     className="h-full bg-gradient-to-r from-green-500 to-green-400 transition-all"
                     style={{ width: `${tournament.winrate}%` }}

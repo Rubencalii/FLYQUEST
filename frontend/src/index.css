@@ -15,14 +15,10 @@
 
 body {
   font-family: 'Inter', sans-serif;
-  background: linear-gradient(135deg, #F8FAFC 0%, #EFF6FF 100%);
+  background: linear-gradient(135deg, #0D1117 0%, #1A1F2E 100%);
   background-attachment: fixed;
   transition: var(--transition);
   min-height: 100vh;
-}
-
-.dark body {
-  background: linear-gradient(135deg, #0D1117 0%, #1A1F2E 100%);
   color: #E4E7EB;
 }
 

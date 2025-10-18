@@ -230,13 +230,13 @@ export default function AdvancedAlerts({ matches, favorites = [], lang = 'es', o
   }
 
   return (
-    <div className="mt-4 p-4 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800">
+    <div className="mt-4 p-4 rounded-xl bg-flyquest-dark/80 border border-blue-800">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2">
+          <h3 className="font-bold text-flyquest-white flex items-center gap-2">
             {translations.title}
           </h3>
-          <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+          <p className="text-xs text-flyquest-gray mt-1">
             {translations.description}
           </p>
         </div>
@@ -245,125 +245,125 @@ export default function AdvancedAlerts({ matches, favorites = [], lang = 'es', o
 
       <div className="space-y-3">
         {/* Remontadas */}
-        <div className="flex items-center justify-between p-3 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between p-3 rounded-lg bg-flyquest-dark/70 border border-blue-900">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
               <span className="text-lg">🔥</span>
-              <span className="font-semibold text-sm text-gray-800 dark:text-white">
+              <span className="font-semibold text-sm text-flyquest-white">
                 {translations.comeback}
               </span>
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400">
+            <p className="text-xs text-flyquest-gray">
               {translations.comebackDesc}
             </p>
           </div>
           <button
             onClick={() => toggleAlert('comeback')}
             className={`relative w-12 h-6 rounded-full transition-colors ${
-              alertsEnabled.comeback ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'
+              alertsEnabled.comeback ? 'bg-green-500' : 'bg-blue-900'
             }`}
           >
-            <div className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${
+            <div className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-flyquest-white transition-transform ${
               alertsEnabled.comeback ? 'transform translate-x-6' : ''
             }`} />
           </button>
         </div>
 
         {/* Draft Phase */}
-        <div className="flex items-center justify-between p-3 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between p-3 rounded-lg bg-flyquest-dark/70 border border-blue-900">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
               <span className="text-lg">🎮</span>
-              <span className="font-semibold text-sm text-gray-800 dark:text-white">
+              <span className="font-semibold text-sm text-flyquest-white">
                 {translations.draftPhase}
               </span>
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400">
+            <p className="text-xs text-flyquest-gray">
               {translations.draftPhaseDesc}
             </p>
           </div>
           <button
             onClick={() => toggleAlert('draftPhase')}
             className={`relative w-12 h-6 rounded-full transition-colors ${
-              alertsEnabled.draftPhase ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'
+              alertsEnabled.draftPhase ? 'bg-green-500' : 'bg-blue-900'
             }`}
           >
-            <div className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${
+            <div className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-flyquest-white transition-transform ${
               alertsEnabled.draftPhase ? 'transform translate-x-6' : ''
             }`} />
           </button>
         </div>
 
         {/* Inicio exacto */}
-        <div className="flex items-center justify-between p-3 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between p-3 rounded-lg bg-flyquest-dark/70 border border-blue-900">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
               <span className="text-lg">⚡</span>
-              <span className="font-semibold text-sm text-gray-800 dark:text-white">
+              <span className="font-semibold text-sm text-flyquest-white">
                 {translations.matchStart}
               </span>
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400">
+            <p className="text-xs text-flyquest-gray">
               {translations.matchStartDesc}
             </p>
           </div>
           <button
             onClick={() => toggleAlert('matchStart')}
             className={`relative w-12 h-6 rounded-full transition-colors ${
-              alertsEnabled.matchStart ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'
+              alertsEnabled.matchStart ? 'bg-green-500' : 'bg-blue-900'
             }`}
           >
-            <div className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${
+            <div className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-flyquest-white transition-transform ${
               alertsEnabled.matchStart ? 'transform translate-x-6' : ''
             }`} />
           </button>
         </div>
 
         {/* Partidos cerrados */}
-        <div className="flex items-center justify-between p-3 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between p-3 rounded-lg bg-flyquest-dark/70 border border-blue-900">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
               <span className="text-lg">💥</span>
-              <span className="font-semibold text-sm text-gray-800 dark:text-white">
+              <span className="font-semibold text-sm text-flyquest-white">
                 {translations.closeGame}
               </span>
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400">
+            <p className="text-xs text-flyquest-gray">
               {translations.closeGameDesc}
             </p>
           </div>
           <button
             onClick={() => toggleAlert('closeGame')}
             className={`relative w-12 h-6 rounded-full transition-colors ${
-              alertsEnabled.closeGame ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'
+              alertsEnabled.closeGame ? 'bg-green-500' : 'bg-blue-900'
             }`}
           >
-            <div className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${
+            <div className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-flyquest-white transition-transform ${
               alertsEnabled.closeGame ? 'transform translate-x-6' : ''
             }`} />
           </button>
         </div>
 
         {/* Playoffs */}
-        <div className="flex items-center justify-between p-3 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between p-3 rounded-lg bg-flyquest-dark/70 border border-blue-900">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
               <span className="text-lg">🏆</span>
-              <span className="font-semibold text-sm text-gray-800 dark:text-white">
+              <span className="font-semibold text-sm text-flyquest-white">
                 {translations.playoff}
               </span>
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400">
+            <p className="text-xs text-flyquest-gray">
               {translations.playoffDesc}
             </p>
           </div>
           <button
             onClick={() => toggleAlert('playoff')}
             className={`relative w-12 h-6 rounded-full transition-colors ${
-              alertsEnabled.playoff ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'
+              alertsEnabled.playoff ? 'bg-green-500' : 'bg-blue-900'
             }`}
           >
-            <div className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${
+            <div className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-flyquest-white transition-transform ${
               alertsEnabled.playoff ? 'transform translate-x-6' : ''
             }`} />
           </button>
@@ -371,8 +371,8 @@ export default function AdvancedAlerts({ matches, favorites = [], lang = 'es', o
       </div>
 
       {/* Contador de alertas */}
-      <div className="mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
-        <p className="text-xs text-center text-gray-600 dark:text-gray-400">
+      <div className="mt-4 pt-3 border-t border-blue-900">
+        <p className="text-xs text-center text-flyquest-gray">
           {notifiedAlerts.size} {translations.alertsSent}
         </p>
       </div>

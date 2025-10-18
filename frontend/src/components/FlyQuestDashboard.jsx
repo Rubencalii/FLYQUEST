@@ -286,7 +286,6 @@ export default function FlyQuestDashboard() {
   const [matches, setMatches] = useState([])
   const [timezone, setTimezone] = useState('local')
   const [tzList, setTzList] = useState([])
-  const [dark, setDark] = useState(false)
   const [logos, setLogos] = useState({})
   const [showBugForm, setShowBugForm] = useState(false)
   const [showAdmin, setShowAdmin] = useState(false)
@@ -433,9 +432,10 @@ export default function FlyQuestDashboard() {
     setTzList(uniqueTimezones)
   }, [])
 
+  // Forzar modo oscuro siempre
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', dark)
-  }, [dark])
+    document.documentElement.classList.add('dark')
+  }, [])
 
   // Combinar partidos recientes y históricos para stats/achievements
   useEffect(() => {
@@ -542,7 +542,7 @@ export default function FlyQuestDashboard() {
   }
 
   return (
-    <div className="min-h-screen p-6">
+  <div className="min-h-screen p-6 dark">
       {/* Header espectacular con efecto glassmorphism */}
       <header className="card mb-8 p-6 relative overflow-hidden animate-slide-in border-2 border-flyquest-green/30 dark:border-flyquest-neon/30">
         {/* Efecto de brillo de fondo */}
@@ -582,42 +582,36 @@ export default function FlyQuestDashboard() {
           <div className="flex items-center gap-3 flex-wrap justify-end w-full md:w-auto">
             <button
               onClick={toggleLanguage}
-              className="px-4 py-2 rounded-xl bg-gray-100 dark:bg-flyquest-dark/50 hover:bg-flyquest-green/10 dark:hover:bg-flyquest-neon/20 border border-flyquest-green/30 dark:border-flyquest-neon/30 text-gray-800 dark:text-flyquest-white font-semibold transition-all hover:scale-105 hover:shadow-lg"
+              className="px-4 py-2 rounded-xl bg-flyquest-dark/50 border border-flyquest-neon/30 text-flyquest-white font-semibold transition-all hover:scale-105 hover:shadow-lg"
             >
               {lang === 'es' ? 'ES 🇪🇸' : 'EN 🇺🇸'}
             </button>
             <select
               value={timezone}
               onChange={(e) => setTimezone(e.target.value)}
-              className="px-4 py-2 rounded-xl bg-gray-100 dark:bg-flyquest-dark/50 border border-flyquest-green/30 dark:border-flyquest-neon/30 text-gray-800 dark:text-flyquest-white font-medium cursor-pointer hover:border-flyquest-green/50 dark:hover:border-flyquest-neon/50 transition-all"
+              className="px-4 py-2 rounded-xl bg-flyquest-dark/50 border border-flyquest-neon/30 text-flyquest-white font-medium cursor-pointer hover:border-flyquest-neon/50 transition-all"
             >
               {tzList.map((tz) => (
-                <option key={tz} value={tz} className="bg-white dark:bg-flyquest-darker">
+                <option key={tz} value={tz} className="bg-flyquest-darker">
                   {tz}
                 </option>
               ))}
             </select>
             <button
               onClick={fetchMatches}
-              className="px-4 py-2 rounded-xl bg-flyquest-green/10 dark:bg-flyquest-neon/10 hover:bg-flyquest-green/20 dark:hover:bg-flyquest-neon/20 border border-flyquest-green/50 dark:border-flyquest-neon/50 text-flyquest-green dark:text-flyquest-neon font-bold transition-all hover:scale-105 hover:shadow-lg"
+              className="px-4 py-2 rounded-xl bg-flyquest-neon/10 hover:bg-flyquest-neon/20 border border-flyquest-neon/50 text-flyquest-neon font-bold transition-all hover:scale-105 hover:shadow-lg"
             >
               🔄 {t.refresh}
             </button>
             <button
-              onClick={() => setDark((d) => !d)}
-              className="px-4 py-2 rounded-xl bg-gray-100 dark:bg-flyquest-dark/50 hover:bg-flyquest-green/10 dark:hover:bg-flyquest-neon/20 border border-flyquest-green/30 dark:border-flyquest-neon/30 text-2xl transition-all hover:scale-110 hover:rotate-180 duration-500"
-            >
-              {dark ? '☀️' : '🌙'}
-            </button>
-            <button
               onClick={() => setShowBugForm((s) => !s)}
-              className="px-4 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/50 text-red-600 dark:text-red-400 font-semibold transition-all hover:scale-105"
+              className="px-4 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/50 text-red-400 font-semibold transition-all hover:scale-105"
             >
               🐛 Reportar
             </button>
             <button
               onClick={() => setShowAdmin((s) => !s)}
-              className="px-4 py-2 rounded-xl bg-gradient-to-r from-flyquest-green to-emerald-500 dark:from-flyquest-neon dark:to-flyquest-green text-white dark:text-flyquest-black font-bold transition-all hover:scale-105 hover:shadow-lg"
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-flyquest-neon to-flyquest-green text-flyquest-black font-bold transition-all hover:scale-105 hover:shadow-lg"
             >
               ⚙️ Admin
             </button>
