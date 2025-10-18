@@ -28,87 +28,122 @@ export default function FlyQuestDashboard() {
 
   return (
     <div className="dashboard-main">
-      {/* Encabezado */}
-      <header className="dashboard-header">
-        <div className="dashboard-logo-title">
-          <img src="/public/logo.png" alt="FlyQuest" className="dashboard-logo" />
-          <div>
-            <h1 className="dashboard-title">FlyQuest Dashboard</h1>
-            <span className="dashboard-timezone">Horario: Europe/Madrid</span>
-          </div>
-        </div>
-        <div className="dashboard-controls">
-          <select className="dashboard-lang"><option>ES es</option></select>
-          <select className="dashboard-tz"><option>Europe/Madrid</option></select>
-          <button className="dashboard-btn">Actualizar</button>
-          <button className="dashboard-btn dashboard-btn-report">Reportar</button>
-          <button className="dashboard-btn dashboard-btn-admin">Admin</button>
-        </div>
-      </header>
-
-      {/* Panel de partidos */}
-      <section className="dashboard-matches">
-        <div className="dashboard-matches-header">
-          <h2>Partidos</h2>
-          <div className="dashboard-match-filters">
-            <button className="dashboard-btn dashboard-btn-active">Todos</button>
-            <button className="dashboard-btn">Esta semana</button>
-            <button className="dashboard-btn">Este mes</button>
-          </div>
-          <div className="dashboard-competition-filters">
-            <button className="dashboard-btn dashboard-btn-active">Todas</button>
-            <button className="dashboard-btn">LCS</button>
-            <button className="dashboard-btn">Worlds</button>
-            <button className="dashboard-btn">MSI</button>
-            <button className="dashboard-btn">First Stand</button>
-          </div>
-        </div>
-        <div className="dashboard-matches-list">
-          {matches.length > 0 ? matches.map((match, i) => (
-            <div key={i} className={`dashboard-match-card dashboard-match-status-${match.status}`}>
-              <div className="dashboard-match-date">{match.date}</div>
-              <div className="dashboard-match-teams">
-                <span className="dashboard-team-name">{match.team1}</span>
-                <span className="dashboard-team-score">{match.score1}</span>
-                <span className="dashboard-vs">VS</span>
-                <span className="dashboard-team-name">{match.team2}</span>
-                <span className="dashboard-team-score">{match.score2}</span>
-              </div>
-              <div className="dashboard-match-actions">
-                <span className={`dashboard-match-status dashboard-match-status-${match.status}`}>{match.status}</span>
-                <span className="dashboard-match-time">{match.time}</span>
-                <span className="dashboard-match-league">{match.league}</span>
-                <button className="dashboard-btn-small" onClick={() => window.open(match.calendarUrl, '_blank')}>Compartir</button>
-              </div>
-            </div>
-          )) : <div className="dashboard-match-card">No hay partidos programados.</div>}
-        </div>
-      </section>
-
-      {/* Roster */}
-      <aside className="dashboard-roster">
-        <h2>Roster</h2>
-        <div className="dashboard-roster-list">
-          {roster.length > 0 ? roster.map((player, i) => (
-            <div key={i} className="dashboard-roster-card">
-              <img src={player.photo} alt={player.name} className="dashboard-roster-photo" />
-              <div>
-                <div className="dashboard-roster-name">{player.name}</div>
-                <div className="dashboard-roster-role">{player.role} &mdash; {player.country}</div>
-              </div>
-            </div>
-          )) : <div className="dashboard-roster-card">No hay jugadores disponibles.</div>}
-          {/* Staff técnico */}
-          <div className="dashboard-roster-card dashboard-roster-staff">
-            <div className="dashboard-roster-staff-icon">A</div>
+      {/* Panel izquierdo: Partidos */}
+      <div className="dashboard-left">
+        <header className="dashboard-header">
+          <div className="dashboard-logo-title">
+            <img src="/public/logo.png" alt="FlyQuest" className="dashboard-logo" />
             <div>
-              <div className="dashboard-roster-name">Arrow</div>
-              <div className="dashboard-roster-role">Entrenador Principal</div>
+              <h1 className="dashboard-title">FlyQuest Dashboard</h1>
+              <span className="dashboard-timezone">Horario: Europe/Madrid</span>
             </div>
           </div>
-        </div>
-      </aside>
-
+          <div className="dashboard-controls">
+            <select className="dashboard-lang"><option>ES es</option></select>
+            <select className="dashboard-tz"><option>Europe/Madrid</option></select>
+            <button className="dashboard-btn">Actualizar</button>
+            <button className="dashboard-btn dashboard-btn-report">Reportar</button>
+            <button className="dashboard-btn dashboard-btn-admin">Admin</button>
+          </div>
+        </header>
+        <section className="dashboard-matches">
+          <div className="dashboard-matches-header">
+            <h2>Partidos</h2>
+            <div className="dashboard-match-filters">
+              <button className="dashboard-btn dashboard-btn-active">Todos</button>
+              <button className="dashboard-btn">Esta semana</button>
+              <button className="dashboard-btn">Este mes</button>
+            </div>
+            <div className="dashboard-competition-filters">
+              <button className="dashboard-btn dashboard-btn-active">Todas</button>
+              <button className="dashboard-btn">LCS</button>
+              <button className="dashboard-btn">Worlds</button>
+              <button className="dashboard-btn">MSI</button>
+              <button className="dashboard-btn">First Stand</button>
+            </div>
+          </div>
+          <div className="dashboard-matches-list">
+            {matches.length > 0 ? matches.map((match, i) => (
+              <div key={i} className={`dashboard-match-card dashboard-match-status-${match.status}`}>
+                <div className="dashboard-match-date">{match.date}</div>
+                <div className="dashboard-match-teams">
+                  <span className="dashboard-team-name">{match.team1}</span>
+                  <span className="dashboard-team-score">{match.score1}</span>
+                  <span className="dashboard-vs">VS</span>
+                  <span className="dashboard-team-name">{match.team2}</span>
+                  <span className="dashboard-team-score">{match.score2}</span>
+                </div>
+                <div className="dashboard-match-actions">
+                  <span className={`dashboard-match-status dashboard-match-status-${match.status}`}>{match.status}</span>
+                  <span className="dashboard-match-time">{match.time}</span>
+                  <span className="dashboard-match-league">{match.league}</span>
+                  {/* Botón Google Calendar solo si el partido es futuro */}
+                  {['unstarted', 'upcoming'].includes(match.status) && match.calendarUrl && (
+                    <a className="dashboard-calendar-link" href={match.calendarUrl} target="_blank" rel="noopener noreferrer">Añadir a Google Calendar</a>
+                  )}
+                </div>
+                {/* VOD de YouTube y directos de Twitch */}
+                <div className="dashboard-match-vod">
+                  {match.vodUrl && (
+                    <a className="dashboard-vod-link" href={match.vodUrl} target="_blank" rel="noopener noreferrer">Ver VOD en YouTube</a>
+                  )}
+                  {match.twitchUrl && (
+                    <a className="dashboard-twitch-link" href={match.twitchUrl} target="_blank" rel="noopener noreferrer">Ver directo en Twitch</a>
+                  )}
+                </div>
+              </div>
+            )) : <div className="dashboard-match-card">No hay partidos programados.</div>}
+          </div>
+        </section>
+      </div>
+      {/* Panel derecho: Roster */}
+      <div className="dashboard-right">
+        <aside className="dashboard-roster">
+          <h2 className="dashboard-roster-title">Roster</h2>
+          <div className="dashboard-roster-list">
+            {roster.length > 0 ? roster.map((player, i) => (
+              <div key={i} className="dashboard-roster-card">
+                <img src={player.photo} alt={player.name} className="dashboard-roster-photo" />
+                <div className="dashboard-roster-info">
+                  <div className="dashboard-roster-name">{player.name}</div>
+                  <div className="dashboard-roster-role">{player.role} &mdash; {player.country}</div>
+                  {player.twitter && (
+                    <a href={player.twitter} target="_blank" rel="noopener noreferrer" className="dashboard-roster-social">Twitter</a>
+                  )}
+                </div>
+              </div>
+            )) : <div className="dashboard-roster-card">No hay jugadores disponibles.</div>}
+            {/* Staff técnico */}
+            <div className="dashboard-roster-card dashboard-roster-staff">
+              <div className="dashboard-roster-staff-icon">🧑‍💼</div>
+              <div className="dashboard-roster-info">
+                <div className="dashboard-roster-name">Arrow</div>
+                <div className="dashboard-roster-role">Entrenador Principal</div>
+                <a href="https://twitter.com/Arrow" target="_blank" rel="noopener noreferrer" className="dashboard-roster-social">Twitter</a>
+              </div>
+            </div>
+          </div>
+        </aside>
+        {/* Sección de estadísticas y logros */}
+        <section className="dashboard-stats">
+          <h2 className="dashboard-stats-title">Estadísticas</h2>
+          <div className="dashboard-stats-winrate">
+            <span className="dashboard-stats-label">Winrate:</span>
+            <span className="dashboard-stats-value">{stats.winrate ? `${stats.winrate}%` : 'N/A'}</span>
+          </div>
+          <div className="dashboard-stats-achievements">
+            <h3 className="dashboard-stats-achievements-title">Logros</h3>
+            <ul className="dashboard-stats-achievements-list">
+              {stats.achievements && stats.achievements.length > 0 ? stats.achievements.map((ach, i) => (
+                <li key={i} className="dashboard-stats-achievement">
+                  <span className="dashboard-stats-achievement-icon">🏆</span>
+                  <span className="dashboard-stats-achievement-text">{ach}</span>
+                </li>
+              )) : <li className="dashboard-stats-achievement">Sin logros registrados.</li>}
+            </ul>
+          </div>
+        </section>
+      </div>
       {/* Footer */}
       <footer className="dashboard-footer">
         <div className="dashboard-socials">
