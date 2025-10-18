@@ -551,50 +551,61 @@ export default function FlyQuestDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-flyquest-green to-flyquest-neon text-white flex flex-col">
+    <div className="flyquest-landing">
       {/* Encabezado tipo landing */}
-      <header className="py-12 flex flex-col items-center justify-center bg-black/60 border-b border-flyquest-neon/30">
-        <img src="/public/logo.png" alt="FlyQuest" className="h-16 w-16 mb-4" />
-        <h1 className="text-5xl font-extrabold text-flyquest-neon mb-2 tracking-wide text-center drop-shadow-lg">FlyQuest Dashboard</h1>
-        <p className="text-lg text-flyquest-green text-center max-w-2xl">Bienvenido al panel oficial de FlyQuest. Aquí puedes ver el calendario, roster, estadísticas y logros del equipo, todo en un solo lugar.</p>
+      <header className="flyquest-header">
+        <img src="/public/logo.png" alt="FlyQuest" style={{height:'64px',width:'64px',marginBottom:'1.2rem'}} />
+        <h1>FlyQuest Dashboard</h1>
+        <span className="flyquest-badge">Panel Oficial</span>
+        <p>Bienvenido al panel oficial de FlyQuest. Aquí puedes ver el calendario, roster, estadísticas y logros del equipo, todo en un solo lugar.</p>
       </header>
 
       {/* Sección principal vertical y elegante */}
-      <main className="flex flex-col items-center justify-center w-full px-4">
+      <main>
         {/* Calendario y partidos destacados */}
-        <section className="w-full max-w-3xl mt-12 mb-8" id="calendario">
+        <section className="flyquest-section" id="calendario">
           {/* ...aquí va tu componente de calendario y filtros, tal como ya está... */}
           {/* ...aquí va la lista de partidos destacados... */}
         </section>
 
         {/* Panel de alertas/notificaciones vertical */}
-        <section className="w-full max-w-2xl mb-8">
-          <div className="bg-black/80 rounded-2xl shadow-xl border-2 border-flyquest-neon p-6">
-            <h3 className="text-lg font-bold text-flyquest-neon mb-4 text-center">Alertas & Notificaciones</h3>
-            <div className="space-y-3">
-              <div className="flex items-center gap-2"><span>🔔</span> <span>Notificaciones</span></div>
-              <div className="flex items-center gap-2"><span>⚡</span> <span>Alertas Avanzadas</span></div>
-              <div className="flex items-center gap-2"><span>⏰</span> <span>Inicio exacto</span></div>
-              <div className="flex items-center gap-2"><span>🎯</span> <span>Remontadas en vivo</span></div>
-              <div className="flex items-center gap-2"><span>🛡️</span> <span>Draft Phase</span></div>
-            </div>
+        <section className="flyquest-section">
+          <h3 className="flyquest-section-title" style={{textAlign:'center',color:'#00EBAA',marginBottom:'1.2rem'}}>Alertas & Notificaciones</h3>
+          <div style={{display:'flex',flexDirection:'column',gap:'0.7rem',alignItems:'center'}}>
+            <div><span>🔔</span> <span>Notificaciones</span></div>
+            <div><span>⚡</span> <span>Alertas Avanzadas</span></div>
+            <div><span>⏰</span> <span>Inicio exacto</span></div>
+            <div><span>🎯</span> <span>Remontadas en vivo</span></div>
+            <div><span>🛡️</span> <span>Draft Phase</span></div>
           </div>
         </section>
 
         {/* Roster FlyQuest centrado y destacado */}
-        <section className="w-full max-w-3xl mb-8" id="roster">
-          <PlayerStats />
+        <section className="flyquest-section" id="roster">
+          <div className="flyquest-roster">
+            <PlayerStats />
+          </div>
         </section>
 
         {/* Módulos adicionales en vertical debajo del roster */}
-        <section className="w-full max-w-3xl mb-16 flex flex-col gap-8" id="stats">
+        <section className="flyquest-section" id="stats" style={{marginBottom:'2.5rem'}}>
           <FlyQuestStats matches={allMatches} lang={lang} />
           <StatsBoard matches={allMatches} lang={lang} />
           <Achievements matches={allMatches} lang={lang} />
         </section>
+
+        {/* Iconos sociales integrados */}
+        <div className="flyquest-socials">
+          <a href="https://twitter.com/FlyQuest" target="_blank" rel="noopener noreferrer"><img src="/public/x.svg" alt="X" className="flyquest-social-icon" /></a>
+          <a href="https://instagram.com/flyquest" target="_blank" rel="noopener noreferrer"><img src="/public/instagram.svg" alt="Instagram" className="flyquest-social-icon" /></a>
+          <a href="https://youtube.com/flyquest" target="_blank" rel="noopener noreferrer"><img src="/public/youtube.svg" alt="YouTube" className="flyquest-social-icon" /></a>
+          <a href="https://twitch.tv/flyquest" target="_blank" rel="noopener noreferrer"><img src="/public/twitch.svg" alt="Twitch" className="flyquest-social-icon" /></a>
+        </div>
       </main>
 
-      <FooterFlyQuest t={t} />
+      <footer className="flyquest-footer">
+        <FooterFlyQuest t={t} />
+      </footer>
     </div>
   )
 }
