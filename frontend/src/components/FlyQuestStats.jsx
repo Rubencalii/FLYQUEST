@@ -11,113 +11,106 @@ export default function FlyQuestStats({ matches, lang = 'es' }) {
       return null
     }
 
-    // Filtrar solo partidos completados
-    const completedMatches = matches.filter(m => m.status === 'completed')
+    // Filtrar solo partidos completados (compatibilidad con 'completed' y 'finished')
+    const completedMatches = matches.filter(m => ['completed', 'finished'].includes(m.status))
     
     if (completedMatches.length === 0) {
       return null
     }
 
+    // Ordenar partidos por fecha (más reciente primero)
+    const sortedMatches = [...completedMatches].sort((a, b) =>
+      new Date(b.startTime || b.match?.startTime || b.eventStartTime || 0) -
+      new Date(a.startTime || a.match?.startTime || a.eventStartTime || 0)
+    )
+
+    // Función robusta para determinar si FlyQuest ganó un partido
+    const isFlyWin = (match) => {
+      const teams = match.teams || match.match?.teams || []
+      if (!teams || teams.length === 0) return null
+      let flyIdx = teams.findIndex(t =>
+        (t.slug === 'flyquest') || (t.code === 'FLY') || ((t.name || '').toLowerCase().includes('flyquest'))
+      )
+      if (flyIdx === -1) flyIdx = 0 // suponer [0] es FLY (backend lo formatea así)
+      const oppIdx = teams.length === 2 ? (flyIdx === 0 ? 1 : 0) : teams.findIndex((_, i) => i !== flyIdx)
+      const fly = teams[flyIdx] || {}
+      const opp = teams[oppIdx] || {}
+      const flyScore = (typeof fly.score === 'number' ? fly.score : (fly.result?.gameWins ?? 0))
+      const oppScore = (typeof opp.score === 'number' ? opp.score : (opp.result?.gameWins ?? 0))
+      if (flyScore === null || oppScore === null) return null
+      return flyScore > oppScore
+    }
+
+    // Construir vector de resultados (true=win, false=loss) para métricas
+    const results = sortedMatches.map(m => isFlyWin(m)).filter(v => v !== null)
+
     // Calcular victorias y derrotas
-    let wins = 0
-    let losses = 0
+    const wins = results.filter(Boolean).length
+    const losses = results.length - wins
+
+    // Racha actual (desde el más reciente hacia atrás)
     let currentStreak = 0
-    let currentStreakType = null // 'win' o 'loss'
+    let currentStreakType = null // 'win' | 'loss'
+    if (results.length > 0) {
+      const first = results[0]
+      currentStreakType = first ? 'win' : 'loss'
+      for (const r of results) {
+        if (r === first) currentStreak++
+        else break
+      }
+    }
+
+    // Mejores rachas históricas
     let bestWinStreak = 0
     let bestLossStreak = 0
+    let tmpW = 0
+    let tmpL = 0
+    // Para mejores rachas, conviene recorrer cronológicamente (antiguo -> reciente)
+    const chrono = [...results].reverse()
+    for (const r of chrono) {
+      if (r) {
+        tmpW += 1
+        bestWinStreak = Math.max(bestWinStreak, tmpW)
+        tmpL = 0
+      } else {
+        tmpL += 1
+        bestLossStreak = Math.max(bestLossStreak, tmpL)
+        tmpW = 0
+      }
+    }
 
     // Estadísticas por torneo
     const byTournament = {}
-
-    // Ordenar partidos por fecha (más reciente primero)
-    const sortedMatches = [...completedMatches].sort((a, b) => 
-      new Date(b.startTime) - new Date(a.startTime)
-    )
-
-    sortedMatches.forEach((match, idx) => {
-      const flyquestTeam = match.teams?.find(t => 
-        t.name?.toLowerCase().includes('flyquest')
-      )
-      
-      if (!flyquestTeam) return
-
-      const isWin = flyquestTeam.result?.outcome === 'win'
-      
-      // Contabilizar victoria/derrota
-      if (isWin) {
-        wins++
-      } else {
-        losses++
-      }
-
-      // Calcular racha actual (solo los primeros partidos ordenados)
-      if (idx === 0) {
-        currentStreakType = isWin ? 'win' : 'loss'
-        currentStreak = 1
-      } else if (
-        (currentStreakType === 'win' && isWin) ||
-        (currentStreakType === 'loss' && !isWin)
-      ) {
-        currentStreak++
-      }
-
-      // Actualizar mejor racha
-      if (isWin) {
-        let tempWinStreak = 1
-        for (let i = idx + 1; i < sortedMatches.length; i++) {
-          const prevMatch = sortedMatches[i]
-          const prevFQ = prevMatch.teams?.find(t => t.name?.toLowerCase().includes('flyquest'))
-          if (prevFQ?.result?.outcome === 'win') {
-            tempWinStreak++
-          } else {
-            break
-          }
-        }
-        bestWinStreak = Math.max(bestWinStreak, tempWinStreak)
-      } else {
-        let tempLossStreak = 1
-        for (let i = idx + 1; i < sortedMatches.length; i++) {
-          const prevMatch = sortedMatches[i]
-          const prevFQ = prevMatch.teams?.find(t => t.name?.toLowerCase().includes('flyquest'))
-          if (prevFQ?.result?.outcome === 'loss' || !prevFQ?.result) {
-            tempLossStreak++
-          } else {
-            break
-          }
-        }
-        bestLossStreak = Math.max(bestLossStreak, tempLossStreak)
-      }
-
-      // Estadísticas por torneo
-      const league = match.league || 'Unknown'
-      if (!byTournament[league]) {
-        byTournament[league] = { wins: 0, losses: 0, total: 0 }
-      }
-      byTournament[league].total++
-      if (isWin) {
-        byTournament[league].wins++
-      } else {
-        byTournament[league].losses++
-      }
+    sortedMatches.forEach((match) => {
+      const leagueName = (typeof match.league === 'string')
+        ? match.league
+        : (match.league?.name || 'Unknown')
+      if (!byTournament[leagueName]) byTournament[leagueName] = { wins: 0, losses: 0, total: 0 }
+      const w = isFlyWin(match)
+      byTournament[leagueName].total += 1
+      if (w === true) byTournament[leagueName].wins += 1
+      else if (w === false) byTournament[leagueName].losses += 1
     })
 
     const totalGames = wins + losses
-    const winrate = totalGames > 0 ? ((wins / totalGames) * 100).toFixed(1) : 0
+    const winrate = totalGames > 0 ? Math.round(((wins / totalGames) * 100) * 10) / 10 : 0 // número con 1 decimal
 
     // Calcular winrate por torneo
-    const tournamentStats = Object.entries(byTournament).map(([name, data]) => ({
-      name,
-      wins: data.wins,
-      losses: data.losses,
-      total: data.total,
-      winrate: data.total > 0 ? ((data.wins / data.total) * 100).toFixed(1) : 0
-    })).sort((a, b) => b.total - a.total)
+    const tournamentStats = Object.entries(byTournament)
+      .map(([name, data]) => ({
+        name,
+        wins: data.wins,
+        losses: data.losses,
+        total: data.total,
+        winrate: data.total > 0 ? Math.round(((data.wins / data.total) * 100) * 10) / 10 : 0
+      }))
+      .sort((a, b) => b.total - a.total)
 
     return {
       totalGames,
       wins,
       losses,
-      winrate,
+      winrate, // número
       currentStreak,
       currentStreakType,
       bestWinStreak,
