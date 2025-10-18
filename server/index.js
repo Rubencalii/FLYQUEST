@@ -382,15 +382,15 @@ app.get('/api/flyquest/player-stats', async (req, res) => {
       image: p.photoURL || p.image || ''
     }))
 
-    // 2) Consultar Leaguepedia Cargo con últimos N registros de ScoreboardPlayers para FlyQuest
-    // Documentación: https://lol.fandom.com/wiki/Special:CargoTables
-    // Campos usados: Player, Team, Role, Champion, Kills, Deaths, Assists
+    // 2) Consultar Leaguepedia Cargo con límite alto (500) para obtener suficiente histórico
+    // Usar año actual (2025) para últimos 12 meses
     const lpURL = 'https://lol.fandom.com/api.php' +
       '?action=cargoquery&format=json' +
       '&tables=ScoreboardPlayers' +
-      '&fields=Player,Team,Role,Champion,Kills,Deaths,Assists' +
-      '&where=' + encodeURIComponent('Team="FlyQuest"') +
-      '&limit=200'
+      '&fields=Link,Team,Role,Champion,Kills,Deaths,Assists' +
+      '&where=' + encodeURIComponent('Team="FlyQuest" AND Year>=2024') +
+      '&order_by=DateTime_UTC DESC' +
+      '&limit=500'
 
     let lpData = null
     try {
@@ -398,22 +398,31 @@ app.get('/api/flyquest/player-stats', async (req, res) => {
       if (!lpResp.ok) throw new Error('Leaguepedia cargo failed: ' + lpResp.status)
       lpData = await lpResp.json()
     } catch (e) {
-      console.warn('Leaguepedia error:', e.message)
-      // Si falla Leaguepedia, devolver solo el roster sin stats
-      return res.json({ roster: baseRoster })
+      console.warn('⚠️ Leaguepedia ScoreboardPlayers error:', e.message)
+      // Si falla, devolver roster vacío de stats pero con estructura
+      const emptyStats = baseRoster.map(p => ({
+        ...p,
+        kda: 0,
+        gamesPlayed: 0,
+        winrate: 0,
+        championPool: [],
+        stats: { kills: 0, deaths: 0, assists: 0, cs: 0, goldPerMin: 0 }
+      }))
+      return res.json({ roster: emptyStats, source: 'LoL Esports (no Leaguepedia stats)' })
     }
 
     const rows = (lpData?.cargoquery || []).map(x => x.title || {})
+    console.log(`✅ Leaguepedia: ${rows.length} registros de ScoreboardPlayers`)
 
-    // 3) Agregar por jugador
+    // 3) Agregar por jugador (usando Link, que es el ID de jugador en Leaguepedia)
     const byPlayer = {}
     for (const r of rows) {
-      const player = r.Player || r.player || r.Link || null
-      const role = (r.Role || '').toLowerCase()
+      // Link es el nombre estándar del jugador en Leaguepedia (ej: "Bwipo", "Inspired")
+      const player = (r.Link || '').trim()
       const kills = Number(r.Kills ?? 0)
       const deaths = Number(r.Deaths ?? 0)
       const assists = Number(r.Assists ?? 0)
-      const champ = r.Champion || null
+      const champ = (r.Champion || '').trim()
       if (!player) continue
       if (!byPlayer[player]) byPlayer[player] = { games: 0, kills: 0, deaths: 0, assists: 0, champs: {} }
       byPlayer[player].games += 1
@@ -423,39 +432,56 @@ app.get('/api/flyquest/player-stats', async (req, res) => {
       if (champ) byPlayer[player].champs[champ] = (byPlayer[player].champs[champ] || 0) + 1
     }
 
-    // 4) Fusionar con roster actual (solo jugadores del roster)
+    console.log('📊 Jugadores encontrados en Leaguepedia:', Object.keys(byPlayer))
+
+    // 4) Fusionar con roster actual usando nombres normalizados
     const final = baseRoster.map(p => {
-      // Emparejar por nick (summoner name) o name según Leaguepedia
-      const keys = [p.nick, p.name].filter(Boolean)
+      // Normalizar nombre para emparejar (eliminar espacios, lowercase)
+      const normalize = (str) => (str || '').toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9]/g, '')
+      const normName = normalize(p.name)
+      const normNick = normalize(p.nick)
+
+      // Buscar en byPlayer con varios intentos de emparejamiento
       let agg = null
-      for (const k of keys) {
-        if (byPlayer[k]) { agg = byPlayer[k]; break }
+      for (const [lpPlayer, data] of Object.entries(byPlayer)) {
+        const normLp = normalize(lpPlayer)
+        // Intentar coincidencias: nombre completo, nick, o que uno contenga al otro
+        if (normLp === normName || normLp === normNick || 
+            normName.includes(normLp) || normNick.includes(normLp) ||
+            lpPlayer.toLowerCase() === p.name.toLowerCase() ||
+            lpPlayer.toLowerCase() === p.nick.toLowerCase()) {
+          agg = data
+          console.log(`✅ Emparejado: ${p.name} (${p.nick}) → ${lpPlayer}`)
+          break
+        }
       }
+
       const gamesPlayed = agg?.games || 0
       const kills = agg?.kills || 0
       const deaths = agg?.deaths || 0
       const assists = agg?.assists || 0
-      const kda = deaths > 0 ? Number(((kills + assists) / deaths).toFixed(1)) : (kills + assists)
+      const kda = deaths > 0 ? Number(((kills + assists) / deaths).toFixed(1)) : (kills + assists > 0 ? kills + assists : 0)
       const championPool = Object.entries(agg?.champs || {})
         .sort((a, b) => b[1] - a[1])
         .slice(0, 5)
         .map(([name]) => name)
+      
       return {
         id: p.id,
         name: p.name,
         role: p.role,
         country: p.country,
         image: p.image,
-        kda: gamesPlayed > 0 ? kda : null,
+        kda: gamesPlayed > 0 ? kda : 0,
         gamesPlayed,
-        winrate: null, // no fiable sin join extra; se puede añadir después
-        championPool,
+        winrate: 0, // TODO: calcular con join a ScoreboardGames
+        championPool: championPool.length > 0 ? championPool : ['—'],
         stats: {
-          kills: gamesPlayed > 0 ? Number((kills / gamesPlayed).toFixed(1)) : null,
-          deaths: gamesPlayed > 0 ? Number((deaths / gamesPlayed).toFixed(1)) : null,
-          assists: gamesPlayed > 0 ? Number((assists / gamesPlayed).toFixed(1)) : null,
-          cs: null,
-          goldPerMin: null
+          kills: gamesPlayed > 0 ? Number((kills / gamesPlayed).toFixed(1)) : 0,
+          deaths: gamesPlayed > 0 ? Number((deaths / gamesPlayed).toFixed(1)) : 0,
+          assists: gamesPlayed > 0 ? Number((assists / gamesPlayed).toFixed(1)) : 0,
+          cs: 0,
+          goldPerMin: 0
         }
       }
     })
