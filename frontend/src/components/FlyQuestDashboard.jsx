@@ -250,6 +250,15 @@ function MatchCard({ match, timezone, showDate = false, isFavorite = false, onTo
                     >
                       🎮 Ver VOD (Twitch)
                     </a>
+                    <a
+                      href={generateGoogleCalendarLink()}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-semibold text-sm transition-all hover:scale-105 shadow-lg animate-bounce"
+                      title="Añadir este partido a Google Calendar"
+                    >
+                      🗓️ Google Calendar
+                    </a>
                   </>
                 )}
                 {(match.status === 'unstarted' || match.status === 'upcoming') && (
@@ -887,6 +896,11 @@ export default function FlyQuestDashboard() {
           </div>
         )}
       </main>
+
+      {/* Roster FlyQuest debajo del calendario */}
+      <div className="max-w-4xl mx-auto mt-10 mb-10">
+        <PlayerStats />
+      </div>
 
       <FooterFlyQuest t={t} />
     </div>
